@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XIV Mit Calculator</title>
+    <script src="script.js" defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        /* Put job selection and mit container next to each other */
+        #mitsAndParty {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        /* make mit checkboxes align vertically */
+        #mitOptions {
+            display: flex;
+            flex-direction: column;
+            
+        }
+
+    </style>
+</head>
+<body>
+    <h1>XIV Mit Calculator</h1>
+    <div id="damage">
+        <label for="mitInput">Damage:</label>
+        <input type="number" id="mitInput" name="mitInput" required>
+        <select id="mitDropdown">
+            <option value="magical">Magical</option>
+            <option value="physical">Physical</option>
+        </select>
+        <button type="submit" onclick="calculateDamage()">Calculate</button>
+    </div>
+    
+    <div id="result">
+        <h3>Max:  <span id="maxDamage">0</span></h3>
+        <h3>Base: <span id="baseDamage">0</span></h3>
+        <h3>Min:   <span id="minDamage">0</span></h3>
+        <h3>Total Mit Percent: <span id="totalMitPercent">0%</span></h3>
+
+    </div> 
+    <div id="mitsAndParty">
+
+        <div id = "partyComp">
+            <h2>Party Comp</h2>
+
+            <h3>Tank</h3>
+            <input type="checkbox" id="PLD" class="jobCheckbox">
+            <label for="PLD">PLD</label>
+            <input type="checkbox" id="WAR" class="jobCheckbox">
+            <label for="WAR">WAR</label>
+            <input type="checkbox" id="DRK" class="jobCheckbox">
+            <label for="DRK">DRK</label>
+            <input type="checkbox" id="GNB" class="jobCheckbox">
+            <label for="GNB">GNB</label>
+
+            <h3>Melee</h3>
+            <input type="checkbox" id="DRG" class="jobCheckbox">
+            <label for="DRG">DRG</label>
+            <input type="checkbox" id="MNK" class="jobCheckbox">
+            <label for="MNK">MNK</label>
+            <input type="checkbox" id="NIN" class="jobCheckbox">
+            <label for="NIN">NIN</label>
+            <input type="checkbox" id="SAM" class="jobCheckbox">
+            <label for="SAM">SAM</label>    
+            <input type="checkbox" id="RPR" class="jobCheckbox">
+            <label for="RPR">RPR</label>
+            <input type="checkbox" id="VPR" class="jobCheckbox">
+            <label for="VPR">VPR</label>
+
+            <h3>Caster</h3>
+            <input type="checkbox" id="BLM" class="jobCheckbox">
+            <label for="BLM">BLM</label>
+            <input type="checkbox" id="SMN" class="jobCheckbox">
+            <label for="SMN">SMN</label>
+            <input type="checkbox" id="RDM" class="jobCheckbox">
+            <label for="RDM">RDM</label>
+            <input type="checkbox" id="PCT" class="jobCheckbox">
+            <label for="PCT">PCT</label>   
+
+            <h3>Physical Ranged</h3>
+            <input type="checkbox" id="BRD" class="jobCheckbox">
+            <label for="BRD">BRD</label>
+            <input type="checkbox" id="DNC" class="jobCheckbox">
+            <label for="DNC">DNC</label>
+            <input type="checkbox" id="MCH" class="jobCheckbox">
+            <label for="MCH">MCH</label>
+
+            <h3>Healer</h3>
+            <input type="checkbox" id="WHM" class="jobCheckbox">
+            <label for="WHM">WHM</label>
+            <input type="checkbox" id="AST" class="jobCheckbox">
+            <label for="AST">AST</label>
+            <input type="checkbox" id="SCH" class="jobCheckbox">
+            <label for="SCH">SCH</label>
+            <input type="checkbox" id="SGE" class="jobCheckbox">
+            <label for="SGE">SGE</label>
+        </div>
+
+        <div id="mitOptions">
+            
+        </div>
+    </div>
+</body>
+</html>
