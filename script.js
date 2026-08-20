@@ -6,49 +6,85 @@ var max = 0
 var min = 0
 var base = 0
 
+const MitType = Object.freeze({
+  PARTY: 0,
+  PERSONAL: 1,
+});
+
+
 // create a mit class that has a name, mitPercent, and damageType (magic or physical)
 class percentMit{
     name;
     physicalMit;
     magicMit;
     jobs;
-    constructor(name, physicalMit, magicMit, jobs){
+    mitType
+    constructor(name, physicalMit, magicMit, jobs, mitType){
         this.name = name;
         this.physicalMit = physicalMit;
         this.magicMit = magicMit;
         this.jobs = jobs;
+        this.mitType = mitType
     }
 }
 var mitOptions = [];
-// Tank
-mitOptions.push(new percentMit("Reprisal", 0.10, 0.10, ["PLD", "WAR", "DRK", "GNB"]));
-mitOptions.push(new percentMit("Heart of Light", 0.05, 0.10, ["GNB"]));
-mitOptions.push(new percentMit("Dark Missionary", 0.05, 0.10, ["DRK"]));
-mitOptions.push(new percentMit("Passage of Arms", 0.15, 0.15, ["PLD"]));
+// ==== Tank ====
+mitOptions.push(new percentMit("Reprisal", 0.10, 0.10, ["PLD", "WAR", "DRK", "GNB"], MitType.PARTY));
+mitOptions.push(new percentMit("Rampart", 0.20, 0.20, ["PLD", "WAR", "DRK", "GNB"], MitType.PERSONAL));
+
+// GNB
+mitOptions.push(new percentMit("Heart of Light", 0.05, 0.10, ["GNB"], MitType.PARTY));
+mitOptions.push(new percentMit("Camoflage", 0.10, 0.10, ["GNB"], MitType.PERSONAL));  // TODO: Consider how to handle parry rate
+mitOptions.push(new percentMit("Great Nebula", 0.40, 0.40, ["GNB"], MitType.PERSONAL)); // TODO: Add max health increase to calculation
+mitOptions.push(new percentMit("Heart of Corundum", 0.2775, 0.2775, ["GNB"], MitType.PERSONAL)); // DOUBLE CHECK MATH ON VALUE. It is 2 seperate 15%
+
+// DRK
+mitOptions.push(new percentMit("Dark Missionary", 0.05, 0.10, ["DRK"], MitType.PARTY));
+mitOptions.push(new percentMit("Dark Mind", 0.10, 0.20, ["DRK"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Shadowed Vigil", 0.40, 0.40, ["DRK"], MitType.PERSONAL));
+
+//TODO: Add tbn
+
+// PLD
+mitOptions.push(new percentMit("Passage of Arms", 0.15, 0.15, ["PLD"], MitType.PARTY));
+mitOptions.push(new percentMit("Guardian", 0.40, 0.40, ["PLD"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Bulwark", 0.20, 0.20, ["PLD"], MitType.PERSONAL)); // not super accurate, might not matter. need to check if blocking is multiplicative
+mitOptions.push(new percentMit("Holy Sheltron", 0.2775, 0.2775, ["PLD"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Intervention", 0, 0, ["PLD"], MitType.PERSONAL)); // does variable mitigation based on rampart and guardian
+// TODO: Add divine veil
+
+// WAR
+mitOptions.push(new percentMit("Damnation", 0.40, 0.40, ["WAR"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Bloodwhetting", 0.19, 0.19, ["WAR"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Nascent Flash", 0.10, 0.10, ["WAR"], MitType.PERSONAL)); // has a shield
+// TODO: Add shake
+//TODO: Add thrill of battle
+
+
 
 // Melee
-mitOptions.push(new percentMit("Feint", 0.10, 0.05, ["MNK", "DRG", "NIN", "SAM", "RPR"]));
+mitOptions.push(new percentMit("Feint", 0.10, 0.05, ["MNK", "DRG", "NIN", "SAM", "RPR"], MitType.PARTY));
 
 // Caster
-mitOptions.push(new percentMit("Addle", 0.05, 0.10, ["BLM", "SMN", "RDM", "PCT"]));
-mitOptions.push(new percentMit("Magick Barrier", 0.0, 0.10, ["RDM"]));
+mitOptions.push(new percentMit("Addle", 0.05, 0.10, ["BLM", "SMN", "RDM", "PCT"], MitType.PARTY));
+mitOptions.push(new percentMit("Magick Barrier", 0.0, 0.10, ["RDM"], MitType.PARTY));
 
 // Pranged
-mitOptions.push(new percentMit("Shield Samba", 0.15, 0.15, ["DNC"]));
-mitOptions.push(new percentMit("Troubadour", 0.15, 0.15, ["BRD"]));
-mitOptions.push(new percentMit("Tactician", 0.15, 0.15, ["MCH"]));
-mitOptions.push(new percentMit("Dismantle", 0.10, 0.10, ["MCH"]));
+mitOptions.push(new percentMit("Shield Samba", 0.15, 0.15, ["DNC"], MitType.PARTY));
+mitOptions.push(new percentMit("Troubadour", 0.15, 0.15, ["BRD"], MitType.PARTY));
+mitOptions.push(new percentMit("Tactician", 0.15, 0.15, ["MCH"], MitType.PARTY));
+mitOptions.push(new percentMit("Dismantle", 0.10, 0.10, ["MCH"], MitType.PARTY));
 
 // Healer
-mitOptions.push(new percentMit("Sacred Soil", 0.10, 0.10, ["SCH"]));
-mitOptions.push(new percentMit("Fey Illumination", 0.0, 0.05, ["SCH"]));
-mitOptions.push(new percentMit("Expedient", 0.10, 0.10, ["SCH"]));
-mitOptions.push(new percentMit("Kerachole", 0.10, 0.10, ["SGE"]));
-mitOptions.push(new percentMit("Holos", 0.10, 0.10, ["SGE"]));
-mitOptions.push(new percentMit("Plenary Indulgence", 0.10, 0.10, ["WHM"]));
-mitOptions.push(new percentMit("Temperance", 0.10, 0.10, ["WHM"]));
-mitOptions.push(new percentMit("Collective Unconscious", 0.10, 0.10, ["AST"]));
-mitOptions.push(new percentMit("Sun Sign", 0.10, 0.10, ["AST"]));
+mitOptions.push(new percentMit("Sacred Soil", 0.10, 0.10, ["SCH"], MitType.PARTY));
+mitOptions.push(new percentMit("Fey Illumination", 0.0, 0.05, ["SCH"], MitType.PARTY));
+mitOptions.push(new percentMit("Expedient", 0.10, 0.10, ["SCH"], MitType.PARTY));
+mitOptions.push(new percentMit("Kerachole", 0.10, 0.10, ["SGE"], MitType.PARTY));
+mitOptions.push(new percentMit("Holos", 0.10, 0.10, ["SGE"], MitType.PARTY));
+mitOptions.push(new percentMit("Plenary Indulgence", 0.10, 0.10, ["WHM"], MitType.PARTY));
+mitOptions.push(new percentMit("Temperance", 0.10, 0.10, ["WHM"], MitType.PARTY));
+mitOptions.push(new percentMit("Collective Unconscious", 0.10, 0.10, ["AST"], MitType.PARTY));
+mitOptions.push(new percentMit("Sun Sign", 0.10, 0.10, ["AST"], MitType.PARTY));
 
 function addMit() {
     var selectedMits = new Set();
@@ -111,6 +147,7 @@ function updateMit() {
 
     // Get currently selected mits before clearing
     var mits = document.getElementsByClassName("mitOption");
+    var personalsEnabled = document.getElementById("personalsCheckbox").checked;
     var previouslySelected = new Set();
     for (var i = 0; i < mits.length; i++) {
         if (mits[i].checked) {
@@ -126,6 +163,9 @@ function updateMit() {
     title.innerText = "Available Mits:";
     mitContainer.appendChild(title);
     availableMits.forEach(mit => {
+        if(!personalsEnabled && mitOptions.find(m => m.name === mit).mitType === MitType.PERSONAL) {
+            return; // Skip personal mits if checkbox is not checked
+        }
         var label = document.createElement("label");
         label.className = mit.replace(/\s+/g, '');
         var checkbox = document.createElement("input");
