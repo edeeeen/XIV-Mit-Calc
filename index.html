@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XIV Mit Calculator</title>
     <script src="script.js" defer></script>
+    <script src="constants.js" defer></script>
+    <script src="mitigations.js" defer></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,7 +38,31 @@
         <button type="submit" onclick="calculateDamage()">Calculate</button>
         <input type="checkbox" id="personalsCheckbox" onclick="updateMit()">Enable Personal Mits</input>
     </div>
-    
+    <div id="stats">
+        // potency, main, det, tnc, crit, dh, wd, trait, attribute
+        <p>Potency:</p><input type="number" id="potencyInput" name="potencyInput">
+        <p>Main:</p><input type="number" id="mainInput" name="mainInput">
+        <p>Det:</p><input type="number" id="detInput" name="detInput">
+        <p>TNC:</p><input type="number" id="tncInput" name="tncInput">
+        <p>Crit:</p><input type="number" id="critInput" name="critInput">
+        <p>DH:</p><input type="number" id="dhInput" name="dhInput">
+        <p>WD:</p><input type="number" id="wdInput" name="wdInput">
+        <p>Trait:</p><input type="number" id="traitInput" name="traitInput">
+        <p>Attribute:</p><input type="number" id="attributeInput" name="attributeInput">
+        <button type="submit" onclick="tempShieldsTest()">Calculate</button>
+    </div>
+
+    <div id="tempShields">
+        <h3>Temp Shields</h3>
+        <p>High: <span id="tempShieldHigh">0</span></p>
+        <p>Low: <span id="tempShieldLow">0</span></p>
+        <p>Mid: <span id="tempShieldMid">0</span></p>
+        <h3>Crit: <span id="tempShieldCrit">0</span></h3>
+        <p>Low: <span id="tempShieldCritLow">0</span></p>
+        <p>Mid: <span id="tempShieldCritMid">0</span></p>
+        <p>High: <span id="tempShieldCritHigh">0</span></p>
+    </div>
+
     <div id="result">
         <h3>Max:  <span id="maxDamage">0</span></h3>
         <h3>Base: <span id="baseDamage">0</span></h3>

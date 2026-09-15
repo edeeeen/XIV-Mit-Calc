@@ -6,85 +6,6 @@ var max = 0
 var min = 0
 var base = 0
 
-const MitType = Object.freeze({
-  PARTY: 0,
-  PERSONAL: 1,
-});
-
-
-// create a mit class that has a name, mitPercent, and damageType (magic or physical)
-class percentMit{
-    name;
-    physicalMit;
-    magicMit;
-    jobs;
-    mitType
-    constructor(name, physicalMit, magicMit, jobs, mitType){
-        this.name = name;
-        this.physicalMit = physicalMit;
-        this.magicMit = magicMit;
-        this.jobs = jobs;
-        this.mitType = mitType
-    }
-}
-var mitOptions = [];
-// ==== Tank ====
-mitOptions.push(new percentMit("Reprisal", 0.10, 0.10, ["PLD", "WAR", "DRK", "GNB"], MitType.PARTY));
-mitOptions.push(new percentMit("Rampart", 0.20, 0.20, ["PLD", "WAR", "DRK", "GNB"], MitType.PERSONAL));
-
-// GNB
-mitOptions.push(new percentMit("Heart of Light", 0.05, 0.10, ["GNB"], MitType.PARTY));
-mitOptions.push(new percentMit("Camoflage", 0.10, 0.10, ["GNB"], MitType.PERSONAL));  // TODO: Consider how to handle parry rate
-mitOptions.push(new percentMit("Great Nebula", 0.40, 0.40, ["GNB"], MitType.PERSONAL)); // TODO: Add max health increase to calculation
-mitOptions.push(new percentMit("Heart of Corundum", 0.2775, 0.2775, ["GNB"], MitType.PERSONAL)); // DOUBLE CHECK MATH ON VALUE. It is 2 seperate 15%
-
-// DRK
-mitOptions.push(new percentMit("Dark Missionary", 0.05, 0.10, ["DRK"], MitType.PARTY));
-mitOptions.push(new percentMit("Dark Mind", 0.10, 0.20, ["DRK"], MitType.PERSONAL));
-mitOptions.push(new percentMit("Shadowed Vigil", 0.40, 0.40, ["DRK"], MitType.PERSONAL));
-
-//TODO: Add tbn
-
-// PLD
-mitOptions.push(new percentMit("Passage of Arms", 0.15, 0.15, ["PLD"], MitType.PARTY));
-mitOptions.push(new percentMit("Guardian", 0.40, 0.40, ["PLD"], MitType.PERSONAL));
-mitOptions.push(new percentMit("Bulwark", 0.20, 0.20, ["PLD"], MitType.PERSONAL)); // not super accurate, might not matter. need to check if blocking is multiplicative
-mitOptions.push(new percentMit("Holy Sheltron", 0.2775, 0.2775, ["PLD"], MitType.PERSONAL));
-mitOptions.push(new percentMit("Intervention", 0, 0, ["PLD"], MitType.PERSONAL)); // does variable mitigation based on rampart and guardian
-// TODO: Add divine veil
-
-// WAR
-mitOptions.push(new percentMit("Damnation", 0.40, 0.40, ["WAR"], MitType.PERSONAL));
-mitOptions.push(new percentMit("Bloodwhetting", 0.19, 0.19, ["WAR"], MitType.PERSONAL));
-mitOptions.push(new percentMit("Nascent Flash", 0.10, 0.10, ["WAR"], MitType.PERSONAL)); // has a shield
-// TODO: Add shake
-//TODO: Add thrill of battle
-
-
-
-// Melee
-mitOptions.push(new percentMit("Feint", 0.10, 0.05, ["MNK", "DRG", "NIN", "SAM", "RPR"], MitType.PARTY));
-
-// Caster
-mitOptions.push(new percentMit("Addle", 0.05, 0.10, ["BLM", "SMN", "RDM", "PCT"], MitType.PARTY));
-mitOptions.push(new percentMit("Magick Barrier", 0.0, 0.10, ["RDM"], MitType.PARTY));
-
-// Pranged
-mitOptions.push(new percentMit("Shield Samba", 0.15, 0.15, ["DNC"], MitType.PARTY));
-mitOptions.push(new percentMit("Troubadour", 0.15, 0.15, ["BRD"], MitType.PARTY));
-mitOptions.push(new percentMit("Tactician", 0.15, 0.15, ["MCH"], MitType.PARTY));
-mitOptions.push(new percentMit("Dismantle", 0.10, 0.10, ["MCH"], MitType.PARTY));
-
-// Healer
-mitOptions.push(new percentMit("Sacred Soil", 0.10, 0.10, ["SCH"], MitType.PARTY));
-mitOptions.push(new percentMit("Fey Illumination", 0.0, 0.05, ["SCH"], MitType.PARTY));
-mitOptions.push(new percentMit("Expedient", 0.10, 0.10, ["SCH"], MitType.PARTY));
-mitOptions.push(new percentMit("Kerachole", 0.10, 0.10, ["SGE"], MitType.PARTY));
-mitOptions.push(new percentMit("Holos", 0.10, 0.10, ["SGE"], MitType.PARTY));
-mitOptions.push(new percentMit("Plenary Indulgence", 0.10, 0.10, ["WHM"], MitType.PARTY));
-mitOptions.push(new percentMit("Temperance", 0.10, 0.10, ["WHM"], MitType.PARTY));
-mitOptions.push(new percentMit("Collective Unconscious", 0.10, 0.10, ["AST"], MitType.PARTY));
-mitOptions.push(new percentMit("Sun Sign", 0.10, 0.10, ["AST"], MitType.PARTY));
 
 function addMit() {
     var selectedMits = new Set();
@@ -163,9 +84,11 @@ function updateMit() {
     title.innerText = "Available Mits:";
     mitContainer.appendChild(title);
     availableMits.forEach(mit => {
+        // check if user wants to display personals
         if(!personalsEnabled && mitOptions.find(m => m.name === mit).mitType === MitType.PERSONAL) {
             return; // Skip personal mits if checkbox is not checked
         }
+
         var label = document.createElement("label");
         label.className = mit.replace(/\s+/g, '');
         var checkbox = document.createElement("input");
@@ -188,6 +111,68 @@ function updateMit() {
 
     addMit();
 }
+
+// slightly off, requires lots of bugfixing.
+function calculateShields(potency, main, det, tnc, crit, dh, wd, trait, attribute, lvl = 100) {
+    fDET = (Math.floor(140 * (det - stats.main(lvl)) / stats.main(lvl)) / 1000) + 1;
+    fTNC = Math.floor(100 * (tnc - stats.sub(lvl)) / stats.div(lvl) + 1000);
+    fHMP =  Math.floor(100 * ( main - stats.main(lvl) / stats.div(lvl) )) + 100;
+    // wd can be different on the same job. refer to Job_{Job, Attribute}
+    fWD = (Math.floor((stats.main(lvl) * attribute / 1000) + wd));
+    fCRIT = Math.floor(200 * (crit - stats.sub(lvl)) / stats.div(lvl) + 1400);
+
+    fHMP =  Math.floor(100 * ( main - stats.main(lvl) / stats.div(lvl) )) + 100;
+    H1 = Math.floor(potency * fHMP * fDET / 100) / 1000;
+    H2 = Math.floor(H1 * fTNC / 1000) * fWD / 100 * trait / 100;
+    // CRIT?: If you do not critical hit, CRIT? = 1000. If you critical hit, CRIT? = f(CRIT).
+    H3 = Math.floor(H2 * 1000 / 1000);
+    H3Crit = Math.floor(H2 * fCRIT / 1000);
+    // DOES NOT CALCULATE WITH BUFFS SO BUFFS CAN BE PROPERLY ATTRIBUTED 
+    H = Math.floor(H3 * 100 / 100);
+    HHigh = Math.floor(H3 * 103 / 100);
+    HLow = Math.floor(H3 * 97 / 100);
+
+    HCrit = Math.floor(H3Crit * 100 / 100);
+    HCritHigh = Math.floor(H3Crit * 103 / 100);
+    HCritLow = Math.floor(H3Crit * 97 / 100);
+
+    return {
+        H: H,
+        HHigh: HHigh,
+        HLow: HLow,
+        HCrit: HCrit,
+        HCritHigh: HCritHigh,
+        HCritLow: HCritLow
+    }
+
+}
+
+
+function tempShieldsTest() {
+    var potency = document.getElementById("potencyInput").value;
+    var main = document.getElementById("mainInput").value;
+    var det = document.getElementById("detInput").value;
+    var tnc = document.getElementById("tncInput").value;
+    var crit = document.getElementById("critInput").value;
+    var dh = document.getElementById("dhInput").value;
+    var wd = document.getElementById("wdInput").value;
+    var trait = document.getElementById("traitInput").value;
+    var attribute = document.getElementById("attributeInput").value;
+
+    var shields = calculateShields(potency, main, det, tnc, crit, dh, wd, trait, attribute);
+
+    document.getElementById("tempShieldHigh").innerText = shields.HHigh;
+    document.getElementById("tempShieldLow").innerText = shields.HLow;
+    document.getElementById("tempShieldMid").innerText = shields.H;
+
+    document.getElementById("tempShieldCritHigh").innerText = shields.HCritHigh;
+    document.getElementById("tempShieldCritLow").innerText = shields.HCritLow;
+    document.getElementById("tempShieldCritMid").innerText = shields.HCrit;
+}
+
+
+
+
 
 for (var i = 0; i < jobs.length; i++) {
     jobs[i].addEventListener("change", updateMit);
