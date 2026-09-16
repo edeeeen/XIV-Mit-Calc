@@ -74,6 +74,9 @@ mitOptions.push(new percentMit("Nascent Flash", 0.10, 0.10, ["WAR"], MitType.PER
 
 // Melee
 mitOptions.push(new percentMit("Feint", 0.10, 0.05, ["MNK", "DRG", "NIN", "SAM", "RPR"], MitType.PARTY));
+mitOptions.push(new percentMit("Shade Shift", 0.20, 0.20, ["NIN"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Riddle of Earth", 0.20, 0.20, ["MNK"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Tengentsu", 0.10, 0.10, ["SAM"], MitType.PERSONAL));
 
 // Caster
 mitOptions.push(new percentMit("Addle", 0.05, 0.10, ["BLM", "SMN", "RDM", "PCT"], MitType.PARTY));
@@ -93,23 +96,38 @@ mitOptions.push(new percentMit("Dismantle", 0.10, 0.10, ["MCH"], MitType.PARTY))
 mitOptions.push(new percentMit("Sacred Soil", 0.10, 0.10, ["SCH"], MitType.PARTY));
 mitOptions.push(new percentMit("Fey Illumination", 0.0, 0.05, ["SCH"], MitType.PARTY)); // TODO: Add % healing potency increase
 mitOptions.push(new percentMit("Expedient", 0.10, 0.10, ["SCH"], MitType.PARTY));
+mitOptions.push(new percentMit("Protraction", 0.10, 0.10, ["SCH"], MitType.PERSONAL));
 mitOptions.push(new shield("Adloquium", 300, 1.80, ["SCH"], MitType.PERSONALSHIELD))
 mitOptions.push(new shield("Concitation", 200, 1.80, ["SCH"], MitType.PARTYSHIELD))
 mitOptions.push(new shield("Consolation", 250, 1, ["SCH"], MitType.PARTYSHIELD))
+mitOptions.push(new shield("Accession", 240, 1.80, ["SCH"], MitType.PARTYSHIELD))
+mitOptions.push(new shield("Manifestation", 360, 1.80, ["SCH"], MitType.PARTYSHIELD))
 // TODO: Add succor shields, spreadlo, etc.
 
 // SGE
 mitOptions.push(new percentMit("Kerachole", 0.10, 0.10, ["SGE"], MitType.PARTY));
 mitOptions.push(new percentMit("Holos", 0.10, 0.10, ["SGE"], MitType.PARTY)); // TODO: Add holos shields
+mitOptions.push(new percentMit("Taurochole", 0.10, 0.10, ["SGE"], MitType.PERSONAL));
+mitOptions.push(new shield("Eukrasian Prognosis", 100, 3.60, ["SGE"], MitType.PARTYSHIELD));
+mitOptions.push(new shield("Eukrasian Diagnosis", 300, 1.80, ["SGE"], MitType.PARTYSHIELD));
+mitOptions.push(new shield("Panhaima", 200, 1, ["SGE"], MitType.PARTYSHIELD));
+mitOptions.push(new shield("Haima", 300, 1, ["SGE"], MitType.PERSONALSHIELD));
 
 // WHM
 mitOptions.push(new percentMit("Plenary Indulgence", 0.10, 0.10, ["WHM"], MitType.PARTY)); // TODO: Add % healing potency increase
 mitOptions.push(new percentMit("Temperance", 0.10, 0.10, ["WHM"], MitType.PARTY));
 mitOptions.push(new shield("Divine Caress", 400, 1, ["WHM"], MitType.PARTYSHIELD))
+mitOptions.push(new percentMit("Aquaveil", 0.10, 0.10, ["WHM"], MitType.PERSONAL));
+mitOptions.push(new shield("Divine Benison", 500, 1, ["WHM"], MitType.PERSONALSHIELD))
+
 // TODO: Add divine carress
 // TODO: Add asylum % healing potency increase
 
 // AST
 mitOptions.push(new percentMit("Collective Unconscious", 0.10, 0.10, ["AST"], MitType.PARTY));
+mitOptions.push(new percentMit("The Bole", 0.10, 0.10, ["AST"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Exaltation", 0.10, 0.10, ["AST"], MitType.PERSONAL));
 mitOptions.push(new percentMit("Sun Sign", 0.10, 0.10, ["AST"], MitType.PARTY));
+mitOptions.push(new shield("The Spire", 400, 1, ["AST"], MitType.PERSONALSHIELD))
+mitOptions.push(new shield("Celestial Intersection", 200, 2, ["AST"], MitType.PERSONALSHIELD))
 // TODO: add neutral shields 
