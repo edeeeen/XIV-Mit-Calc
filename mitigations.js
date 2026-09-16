@@ -7,14 +7,14 @@ class percentMit{
     magicMit;
     jobs;
     mitType;
-    extra;
-    constructor(name, physicalMit, magicMit, jobs, mitType, extra = null){
+    shield;
+    constructor(name, physicalMit, magicMit, jobs, mitType, shield = null){
         this.name = name;
         this.physicalMit = physicalMit;
         this.magicMit = magicMit;
         this.jobs = jobs;
         this.mitType = mitType;
-        this.extra = extra;
+        this.shield = shield;
     }
 }
 
@@ -57,7 +57,9 @@ mitOptions.push(new percentMit("Shadowed Vigil", 0.40, 0.40, ["DRK"], MitType.PE
 
 // PLD
 mitOptions.push(new percentMit("Passage of Arms", 0.15, 0.15, ["PLD"], MitType.PARTY));
-mitOptions.push(new percentMit("Guardian", 0.40, 0.40, ["PLD"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Guardian", 0.40, 0.40, ["PLD"], MitType.PERSONAL, 
+    new shield("Guardian", 1000, 1, ["PLD"], MitType.PERSONALSHIELD)
+));
 mitOptions.push(new percentMit("Bulwark", 0.20, 0.20, ["PLD"], MitType.PERSONAL)); // not super accurate, might not matter. need to check if blocking is multiplicative
 mitOptions.push(new percentMit("Holy Sheltron", 0.2775, 0.2775, ["PLD"], MitType.PERSONAL));
 mitOptions.push(new percentMit("Intervention", 0, 0, ["PLD"], MitType.PERSONAL)); // does variable mitigation based on rampart and guardian
@@ -65,8 +67,12 @@ mitOptions.push(new percentMit("Intervention", 0, 0, ["PLD"], MitType.PERSONAL))
 
 // WAR
 mitOptions.push(new percentMit("Damnation", 0.40, 0.40, ["WAR"], MitType.PERSONAL));
-mitOptions.push(new percentMit("Bloodwhetting", 0.19, 0.19, ["WAR"], MitType.PERSONAL));
-mitOptions.push(new percentMit("Nascent Flash", 0.10, 0.10, ["WAR"], MitType.PERSONAL)); // has a shield
+mitOptions.push(new percentMit("Bloodwhetting", 0.19, 0.19, ["WAR"], MitType.PERSONAL,
+    new shield("Bloodwhetting", 400, 1, ["WAR"], MitType.PERSONALSHIELD)
+));
+mitOptions.push(new percentMit("Nascent Flash", 0.19, 0.19, ["WAR"], MitType.PERSONAL,
+    new shield("Bloodwhetting", 400, 1, ["WAR"], MitType.PERSONALSHIELD)
+));
 // TODO: Add shake
 //TODO: Add thrill of battle
 
@@ -80,7 +86,7 @@ mitOptions.push(new percentMit("Tengentsu", 0.10, 0.10, ["SAM"], MitType.PERSONA
 
 // Caster
 mitOptions.push(new percentMit("Addle", 0.05, 0.10, ["BLM", "SMN", "RDM", "PCT"], MitType.PARTY));
-mitOptions.push(new percentMit("Magick Barrier", 0.0, 0.10, ["RDM"], MitType.PARTY));
+mitOptions.push(new percentMit("Magick Barrier", 0.0, 0.10, ["RDM"], MitType.PARTY)); // TODO: Add healing buff
 // TODO: Add tempura grassa
 
 // Pranged
@@ -102,11 +108,13 @@ mitOptions.push(new shield("Concitation", 200, 1.80, ["SCH"], MitType.PARTYSHIEL
 mitOptions.push(new shield("Consolation", 250, 1, ["SCH"], MitType.PARTYSHIELD))
 mitOptions.push(new shield("Accession", 240, 1.80, ["SCH"], MitType.PARTYSHIELD))
 mitOptions.push(new shield("Manifestation", 360, 1.80, ["SCH"], MitType.PARTYSHIELD))
-// TODO: Add succor shields, spreadlo, etc.
+// TODO: spreadlo
 
 // SGE
 mitOptions.push(new percentMit("Kerachole", 0.10, 0.10, ["SGE"], MitType.PARTY));
-mitOptions.push(new percentMit("Holos", 0.10, 0.10, ["SGE"], MitType.PARTY)); // TODO: Add holos shields
+mitOptions.push(new percentMit("Holos", 0.10, 0.10, ["SGE"], MitType.PARTY,
+    new shield("Holos", 300, 1, ["SGE"], MitType.PARTYSHIELD)
+));
 mitOptions.push(new percentMit("Taurochole", 0.10, 0.10, ["SGE"], MitType.PERSONAL));
 mitOptions.push(new shield("Eukrasian Prognosis II", 100, 3.60, ["SGE"], MitType.PARTYSHIELD));
 mitOptions.push(new shield("Eukrasian Diagnosis", 300, 1.80, ["SGE"], MitType.PARTYSHIELD));
@@ -120,7 +128,6 @@ mitOptions.push(new shield("Divine Caress", 400, 1, ["WHM"], MitType.PARTYSHIELD
 mitOptions.push(new percentMit("Aquaveil", 0.10, 0.10, ["WHM"], MitType.PERSONAL));
 mitOptions.push(new shield("Divine Benison", 500, 1, ["WHM"], MitType.PERSONALSHIELD))
 
-// TODO: Add divine carress
 // TODO: Add asylum % healing potency increase
 
 // AST

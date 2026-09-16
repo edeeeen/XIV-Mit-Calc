@@ -23,30 +23,46 @@ function addMit() {
     var selectedMitObjects = mitOptions.filter(mit => selectedMits.has(mit.name));
 
     // split up shield and normal mits
-    var { shields, normalMits } = selectedMitObjects.reduce((acc, mit) => {
-        if (mit.mitType === MitType.PARTYSHIELD || mit.mitType === MitType.PERSONALSHIELD) {
-            acc.shields.push(mit);
-        } else {
-            acc.normalMits.push(mit);
+    var shields = [];
+    var normalMits = [];
+
+    selectedMitObjects.forEach(mit => {
+        // If it has percentage mitigation, treat it as a normal mit
+        if (mit.physicalMit > 0 || mit.magicMit > 0) {
+            normalMits.push(mit);
         }
-        return acc;
-    }, { shields: [], normalMits: [] });
+
+        // If it is purely a shield object, add to shields
+        if (mit.mitType === MitType.PARTYSHIELD || mit.mitType === MitType.PERSONALSHIELD) {
+            shields.push(mit);
+        }
+
+        // If it is a percentage mit WITH an attached shield (like Holos), attach its shield
+        if (mit.shield) {
+            // Ensure the attached shield knows which job cast it
+            if (!mit.shield.jobs) mit.shield.jobs = mit.jobs; 
+            shields.push(mit.shield); 
+        }
+    });
+
+    console.log(shields)
 
 
     // ======== SHIELD MITS ==============
+    // sort in consumption prio
+    shields.sort((a, b) => {
+        let indexA = consumtionPriority.indexOf(a.name);
+        let indexB = consumtionPriority.indexOf(b.name);
+
+        if (indexA === -1) indexA = Infinity;
+        if (indexB === -1) indexB = Infinity;
+
+        return indexA - indexB;
+    });
     potency = 0;
     let allShields = []
     if(shields.length > 0 ) {
-        // sort in consumption prio
-        shields.sort((a, b) => {
-            let indexA = consumtionPriority.indexOf(a.name);
-            let indexB = consumtionPriority.indexOf(b.name);
-
-            if (indexA === -1) indexA = Infinity;
-            if (indexB === -1) indexB = Infinity;
-
-            return indexA - indexB;
-        });
+        
 
         shields.forEach( mit => {
             if(mit.potency > 0) {
@@ -110,6 +126,8 @@ function addMit() {
     document.getElementById("totalMitPercent").innerText = (Math.round((1 - totalMit) * 10000)/100) + "%";
 }
 
+// calculate health from vitality
+// tank calc is slightly different and off by a bit
 function healthCalculation(vitality, job, lvl = 100) {
     // Level base constants
     const baseHP = stats.hp(lvl);       // 4400 at lvl 100
@@ -123,12 +141,14 @@ function healthCalculation(vitality, job, lvl = 100) {
 
     const isTank = ["WAR", "PLD", "DRK", "GNB"].includes(job);
     const vitScalar = hpPerVit(lvl, isTank); 
+    console.log(vitScalar)
 
     const bonusHP = Math.floor((vitality - baseMain) * vitScalar);
 
     return jobBaseHP + bonusHP;
 }
 
+// checks when user types in vitality
 function vitalityListener(event, job, lvl = 100) {
     healthElement = document.getElementById(job + "Health");
     if (healthElement) {
