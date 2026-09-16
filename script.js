@@ -62,8 +62,6 @@ function addMit() {
     potency = 0;
     let allShields = []
     if(shields.length > 0 ) {
-        
-
         shields.forEach( mit => {
             if(mit.potency > 0) {
                 // if its based off of potency
@@ -442,4 +440,6 @@ function calculateDamage() {
 
 document.addEventListener("DOMContentLoaded", () => {
     updateMit()
+    document.getElementById("mitInput").addEventListener("input", calculateDamage)
+    document.getElementById("mitDropdown").addEventListener("input", calculateDamage)
 });
