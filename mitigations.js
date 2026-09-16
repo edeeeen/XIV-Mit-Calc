@@ -108,7 +108,7 @@ mitOptions.push(new shield("Manifestation", 360, 1.80, ["SCH"], MitType.PARTYSHI
 mitOptions.push(new percentMit("Kerachole", 0.10, 0.10, ["SGE"], MitType.PARTY));
 mitOptions.push(new percentMit("Holos", 0.10, 0.10, ["SGE"], MitType.PARTY)); // TODO: Add holos shields
 mitOptions.push(new percentMit("Taurochole", 0.10, 0.10, ["SGE"], MitType.PERSONAL));
-mitOptions.push(new shield("Eukrasian Prognosis", 100, 3.60, ["SGE"], MitType.PARTYSHIELD));
+mitOptions.push(new shield("Eukrasian Prognosis II", 100, 3.60, ["SGE"], MitType.PARTYSHIELD));
 mitOptions.push(new shield("Eukrasian Diagnosis", 300, 1.80, ["SGE"], MitType.PARTYSHIELD));
 mitOptions.push(new shield("Panhaima", 200, 1, ["SGE"], MitType.PARTYSHIELD));
 mitOptions.push(new shield("Haima", 300, 1, ["SGE"], MitType.PERSONALSHIELD));
@@ -131,3 +131,4 @@ mitOptions.push(new percentMit("Sun Sign", 0.10, 0.10, ["AST"], MitType.PARTY));
 mitOptions.push(new shield("The Spire", 400, 1, ["AST"], MitType.PERSONALSHIELD))
 mitOptions.push(new shield("Celestial Intersection", 200, 2, ["AST"], MitType.PERSONALSHIELD))
 // TODO: add neutral shields 
+

@@ -6,6 +6,8 @@ var max = 0
 var min = 0
 var base = 0
 
+const hasPotencyShields = ["WAR", "PLD", "SGE", "SCH", "AST", "WHM"]
+
 
 function addMit() {
     updatePartyList();
@@ -35,6 +37,17 @@ function addMit() {
     potency = 0;
     let allShields = []
     if(shields.length > 0 ) {
+        // sort in consumption prio
+        shields.sort((a, b) => {
+            let indexA = consumtionPriority.indexOf(a.name);
+            let indexB = consumtionPriority.indexOf(b.name);
+
+            if (indexA === -1) indexA = Infinity;
+            if (indexB === -1) indexB = Infinity;
+
+            return indexA - indexB;
+        });
+
         shields.forEach( mit => {
             if(mit.potency > 0) {
                 // if its based off of potency
@@ -172,44 +185,49 @@ function updatePartyList() {
             mainStatP.append(mainStatInput)
             mainStatP.id = "mainStat"
             jobDiv.append(mainStatP)
-        
-            det = document.createElement("p")
-            det.innerText = "DET"
-            detInput = document.createElement("input")
-            detInput.id = jobId + "Det"
-            det.append(detInput)
-            det.id = "det"
-            jobDiv.append(det)
+            
+            // none of this needs to exist for jobs that dont have potency shields
+            if(hasPotencyShields.includes(jobId)) {
+                det = document.createElement("p")
+                det.innerText = "DET"
+                detInput = document.createElement("input")
+                detInput.id = jobId + "Det"
+                det.append(detInput)
+                det.id = "det"
+                jobDiv.append(det)
+                
+
+                // only show if tank
+                let tanks = ["WAR", "PLD", "DRK", "GNB"]
+                if(tanks.includes(jobId)) {
+                    TNC = document.createElement("p")
+                    TNC.innerText = "TNC"
+                    TNCInput = document.createElement("input")
+                    TNCInput.id = jobId+"TNCInput"
+                    TNC.append(TNCInput)
+                    TNC.id = "TNC"
+                    jobDiv.append(TNC)
+                }
+                
+                
+
+                CRT = document.createElement("p")
+                CRT.innerText = "CRT"
+                CRTInput = document.createElement("input")
+                CRTInput.id = jobId + "CRTInput"
+                CRT.append(CRTInput)
+                CRT.id = "CRT"
+                jobDiv.append(CRT)
             
 
-            // only show if tank
-            TNC = document.createElement("p")
-            TNC.innerText = "TNC"
-            TNCInput = document.createElement("input")
-            TNCInput.id = jobId+"TNCInput"
-            TNC.append(TNCInput)
-            TNC.id = "TNC"
-            jobDiv.append(TNC)
-            
-
-            CRT = document.createElement("p")
-            CRT.innerText = "CRT"
-            CRTInput = document.createElement("input")
-            CRTInput.id = jobId + "CRTInput"
-            CRT.append(CRTInput)
-            CRT.id = "CRT"
-            jobDiv.append(CRT)
-        
-
-            weaponDamage = document.createElement("p")
-            weaponDamage.innerText = "WD"
-            weaponDamageInput = document.createElement("input")
-            weaponDamageInput.id = jobId + "weaponDamageInput"
-            weaponDamage.append(weaponDamageInput)
-            weaponDamage.id = "weaponDamage"
-            jobDiv.append(weaponDamage)
-
-            
+                weaponDamage = document.createElement("p")
+                weaponDamage.innerText = "WD"
+                weaponDamageInput = document.createElement("input")
+                weaponDamageInput.id = jobId + "weaponDamageInput"
+                weaponDamage.append(weaponDamageInput)
+                weaponDamage.id = "weaponDamage"
+                jobDiv.append(weaponDamage)
+            }
             
             partylist.append(jobDiv);
         }
@@ -292,7 +310,11 @@ function getShieldValue(mit) {
     potency = mit.potency;
     mainStatVal = parseInt(document.getElementById(job+"mainStatInput").value);
     det = parseInt(document.getElementById(job+"Det").value);
-    tnc = parseInt(document.getElementById(job+"TNCInput").value);
+    tnc = 400
+    let tanks = ["WAR", "PLD", "DRK", "GNB"]
+    if(tanks.includes(job)) { 
+        tnc = parseInt(document.getElementById(job+"TNCInput").value);
+    }
     crt = parseInt(document.getElementById(job+"CRTInput").value);
     wd  = parseInt(document.getElementById(job+"weaponDamageInput").value);
     return calculateShields(potency, mainStatVal, det, tnc, crt, wd, job)
