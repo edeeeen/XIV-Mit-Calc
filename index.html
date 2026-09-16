@@ -21,8 +21,39 @@
         #mitOptions {
             display: flex;
             flex-direction: column;
-            
         }
+
+        #partyList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        #partyList > div {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+
+        #partyList h3 {
+            margin: 0 0 10px 0;
+        }
+
+        #partyList p {
+            margin: 4px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #partyList input {
+            width: 70px;
+        }
+
 
     </style>
 </head>
@@ -37,23 +68,14 @@
         </select>
         <button type="submit" onclick="calculateDamage()">Calculate</button>
         <input type="checkbox" id="personalsCheckbox" onclick="updateMit()">Enable Personal Mits</input>
+        <input type="checkbox" id="shieldsCheckbox" onclick="updateMit()">Enable Shields</input>
     </div>
-    <div id="stats">
-        // potency, main, det, tnc, crit, dh, wd, trait, attribute
-        <p>Potency:</p><input type="number" id="potencyInput" name="potencyInput">
-        <p>Main:</p><input type="number" id="mainInput" name="mainInput">
-        <p>Det:</p><input type="number" id="detInput" name="detInput">
-        <p>TNC:</p><input type="number" id="tncInput" name="tncInput">
-        <p>Crit:</p><input type="number" id="critInput" name="critInput">
-        <p>DH:</p><input type="number" id="dhInput" name="dhInput">
-        <p>WD:</p><input type="number" id="wdInput" name="wdInput">
-        <p>Trait:</p><input type="number" id="traitInput" name="traitInput">
-        <p>Attribute:</p><input type="number" id="attributeInput" name="attributeInput">
-        <button type="submit" onclick="tempShieldsTest()">Calculate</button>
+
+    <div id="partyList">
     </div>
 
     <div id="tempShields">
-        <h3>Temp Shields</h3>
+        <h3>Potency Shields</h3>
         <p>High: <span id="tempShieldHigh">0</span></p>
         <p>Low: <span id="tempShieldLow">0</span></p>
         <p>Mid: <span id="tempShieldMid">0</span></p>

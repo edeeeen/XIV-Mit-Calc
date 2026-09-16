@@ -1,4 +1,6 @@
 // create a mit class that has a name, mitPercent, and damageType (magic or physical)
+// have to figure out a way to deal with mits that change based on level
+// currently ignoring level completely, assume all is lvl 100
 class percentMit{
     name;
     physicalMit;
@@ -23,11 +25,15 @@ class healingBuff {
 class shield {
     name;
     potency;
+    multiplier;
     jobs;
-    constructor(name, potency, jobs){
+    mitType;
+    constructor(name, potency, multiplier, jobs, mitType){
         this.name = name;
         this.potency = potency;
         this.jobs = jobs;
+        this.multiplier = multiplier;
+        this.mitType = mitType;
     }
 }
 
@@ -87,16 +93,22 @@ mitOptions.push(new percentMit("Dismantle", 0.10, 0.10, ["MCH"], MitType.PARTY))
 mitOptions.push(new percentMit("Sacred Soil", 0.10, 0.10, ["SCH"], MitType.PARTY));
 mitOptions.push(new percentMit("Fey Illumination", 0.0, 0.05, ["SCH"], MitType.PARTY)); // TODO: Add % healing potency increase
 mitOptions.push(new percentMit("Expedient", 0.10, 0.10, ["SCH"], MitType.PARTY));
-// TODO: Add consolation shields
+mitOptions.push(new shield("Adloquium", 300, 1.80, ["SCH"], MitType.PERSONALSHIELD))
+mitOptions.push(new shield("Concitation", 200, 1.80, ["SCH"], MitType.PARTYSHIELD))
+mitOptions.push(new shield("Consolation", 250, 1, ["SCH"], MitType.PARTYSHIELD))
 // TODO: Add succor shields, spreadlo, etc.
+
 // SGE
 mitOptions.push(new percentMit("Kerachole", 0.10, 0.10, ["SGE"], MitType.PARTY));
 mitOptions.push(new percentMit("Holos", 0.10, 0.10, ["SGE"], MitType.PARTY)); // TODO: Add holos shields
+
 // WHM
 mitOptions.push(new percentMit("Plenary Indulgence", 0.10, 0.10, ["WHM"], MitType.PARTY)); // TODO: Add % healing potency increase
 mitOptions.push(new percentMit("Temperance", 0.10, 0.10, ["WHM"], MitType.PARTY));
+mitOptions.push(new shield("Divine Caress", 400, 1, ["WHM"], MitType.PARTYSHIELD))
 // TODO: Add divine carress
 // TODO: Add asylum % healing potency increase
+
 // AST
 mitOptions.push(new percentMit("Collective Unconscious", 0.10, 0.10, ["AST"], MitType.PARTY));
 mitOptions.push(new percentMit("Sun Sign", 0.10, 0.10, ["AST"], MitType.PARTY));

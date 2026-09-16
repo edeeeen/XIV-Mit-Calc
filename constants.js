@@ -1,3 +1,7 @@
+// Lots of data from allagan studies, ty nerds <3
+
+
+
 const statsEnum = Object.freeze({
     //HP MP	STR	VIT	DEX	INT	MND
     HP: 0,
@@ -8,6 +12,157 @@ const statsEnum = Object.freeze({
     INT: 5,
     MND: 6
 })
+
+const MitType = Object.freeze({
+    PARTY: 0,
+    PERSONAL: 1,
+    PERSONALSHIELD: 2,
+    PARTYSHIELD: 3
+});
+
+const mainStat = {
+    value : (job) => {
+        switch (job) {
+            case "PLD":
+            case "GNB":
+            case "DRK":
+            case "WAR":
+            case "MNK":
+            case "DRG":
+            case "RPR":
+            case "SAM":
+                return statsEnum.STR;
+            case "NIN":
+            case "VPR":
+            case "BRD":
+            case "MCH":
+            case "DNC":
+                return statsEnum.DEX;
+            case "BLM":
+            case "SMN":
+            case "RDM":
+            case "PCT":
+                return statsEnum.INT;
+            case "WHM":
+            case "SCH":
+            case "AST":
+            case "SGE":
+                return statsEnum.MND;
+        }
+
+    }
+}
+
+const hpVitTable = {
+    1:   { tank: 8.0,  nonTank: 5.6  },
+    2:   { tank: 8.0,  nonTank: 5.6  },
+    3:   { tank: 8.0,  nonTank: 5.6  },
+    4:   { tank: 8.0,  nonTank: 5.6  },
+    5:   { tank: 8.0,  nonTank: 5.6  },
+    6:   { tank: 8.0,  nonTank: 5.6  },
+    7:   { tank: 8.0,  nonTank: 5.6  },
+    8:   { tank: 8.0,  nonTank: 5.6  },
+    9:   { tank: 8.0,  nonTank: 5.6  },
+    10:  { tank: 8.0,  nonTank: 5.6  },
+    11:  { tank: 8.0,  nonTank: 5.6  },
+    12:  { tank: 8.0,  nonTank: 5.6  },
+    13:  { tank: 8.0,  nonTank: 5.6  },
+    14:  { tank: 8.0,  nonTank: 5.6  },
+    15:  { tank: 8.0,  nonTank: 5.6  },
+    16:  { tank: 8.0,  nonTank: 5.6  },
+    17:  { tank: 8.0,  nonTank: 5.6  },
+    18:  { tank: 8.0,  nonTank: 5.6  },
+    19:  { tank: 8.0,  nonTank: 5.6  },
+    20:  { tank: 8.0,  nonTank: 5.6  },
+    21:  { tank: 8.2,  nonTank: 5.8  },
+    22:  { tank: 8.3,  nonTank: 6.1  },
+    23:  { tank: 8.5,  nonTank: 6.3  },
+    24:  { tank: 8.6,  nonTank: 6.6  },
+    25:  { tank: 8.8,  nonTank: 6.8  },
+    26:  { tank: 8.9,  nonTank: 7.0  },
+    27:  { tank: 9.1,  nonTank: 7.3  },
+    28:  { tank: 9.2,  nonTank: 7.5  },
+    29:  { tank: 9.4,  nonTank: 7.8  },
+    30:  { tank: 9.5,  nonTank: 8.0  },
+    31:  { tank: 9.8,  nonTank: 8.2  },
+    32:  { tank: 10.1, nonTank: 8.3  },
+    33:  { tank: 10.4, nonTank: 8.5  },
+    34:  { tank: 10.7, nonTank: 8.6  },
+    35:  { tank: 11.0, nonTank: 8.8  },
+    36:  { tank: 11.3, nonTank: 9.0  },
+    37:  { tank: 11.6, nonTank: 9.1  },
+    38:  { tank: 11.9, nonTank: 9.3  },
+    39:  { tank: 12.2, nonTank: 9.4  },
+    40:  { tank: 12.5, nonTank: 9.6  },
+    41:  { tank: 12.8, nonTank: 9.8  },
+    42:  { tank: 13.1, nonTank: 9.9  },
+    43:  { tank: 13.4, nonTank: 10.1 },
+    44:  { tank: 13.7, nonTank: 10.2 },
+    45:  { tank: 14.0, nonTank: 10.4 },
+    46:  { tank: 14.3, nonTank: 10.6 },
+    47:  { tank: 14.6, nonTank: 10.7 },
+    48:  { tank: 14.9, nonTank: 10.9 },
+    49:  { tank: 15.2, nonTank: 11.1 },
+    50:  { tank: 15.5, nonTank: 11.2 },
+    51:  { tank: 15.7, nonTank: 11.4 },
+    52:  { tank: 15.9, nonTank: 11.5 },
+    53:  { tank: 16.1, nonTank: 11.7 },
+    54:  { tank: 16.3, nonTank: 11.9 },
+    55:  { tank: 16.5, nonTank: 12.1 },
+    56:  { tank: 16.7, nonTank: 12.2 },
+    57:  { tank: 16.9, nonTank: 12.4 },
+    58:  { tank: 17.1, nonTank: 12.6 },
+    59:  { tank: 17.3, nonTank: 12.7 },
+    60:  { tank: 17.5, nonTank: 12.9 },
+    61:  { tank: 17.6, nonTank: 13.1 },
+    62:  { tank: 17.7, nonTank: 13.2 },
+    63:  { tank: 17.8, nonTank: 13.3 },
+    64:  { tank: 18.0, nonTank: 13.4 },
+    65:  { tank: 18.1, nonTank: 13.5 },
+    66:  { tank: 18.3, nonTank: 13.6 },
+    67:  { tank: 18.5, nonTank: 13.7 },
+    68:  { tank: 18.6, nonTank: 13.8 },
+    69:  { tank: 18.7, nonTank: 13.9 },
+    70:  { tank: 18.8, nonTank: 14.0 },
+    71:  { tank: 19.6, nonTank: 14.2 },
+    72:  { tank: 20.4, nonTank: 14.4 },
+    73:  { tank: 21.1, nonTank: 14.9 },
+    74:  { tank: 21.9, nonTank: 15.5 },
+    75:  { tank: 22.7, nonTank: 16.0 },
+    76:  { tank: 23.5, nonTank: 16.6 },
+    77:  { tank: 24.3, nonTank: 17.1 },
+    78:  { tank: 25.0, nonTank: 17.7 },
+    79:  { tank: 25.8, nonTank: 18.3 },
+    80:  { tank: 26.6, nonTank: 18.8 },
+    81:  { tank: 27.4, nonTank: 19.3 },
+    82:  { tank: 28.2, nonTank: 19.9 },
+    83:  { tank: 29.0, nonTank: 20.4 },
+    84:  { tank: 29.8, nonTank: 21.0 },
+    85:  { tank: 30.6, nonTank: 21.5 },
+    86:  { tank: 31.4, nonTank: 22.1 },
+    87:  { tank: 32.2, nonTank: 22.6 },
+    88:  { tank: 33.0, nonTank: 23.2 },
+    89:  { tank: 33.8, nonTank: 23.7 },
+    90:  { tank: 34.6, nonTank: 24.3 },
+    91:  { tank: 35.4, nonTank: 24.8 },
+    92:  { tank: 36.3, nonTank: 25.4 },
+    93:  { tank: 37.1, nonTank: 26.0 },
+    94:  { tank: 38.0, nonTank: 26.6 },
+    95:  { tank: 38.8, nonTank: 27.2 },
+    96:  { tank: 39.6, nonTank: 27.7 },
+    97:  { tank: 40.5, nonTank: 28.4 },
+    98:  { tank: 41.3, nonTank: 28.9 },
+    99:  { tank: 42.2, nonTank: 29.5 },
+    100: { tank: 43.0, nonTank: 30.1 }
+};
+
+const hpPerVit = (lvl = 100, isTank = false) => {
+    const entry = hpVitTable[lvl];
+    if (!entry) return 0;
+    return isTank ? entry.tank : entry.nonTank;
+}
+
+
 
 const attribute = {
     value : (job) => {
@@ -45,13 +200,17 @@ const stats = {
             case 90: return 1900;
             case 100: return 2780;
         }
+    },
+    hp: (lvl) => {
+        switch (lvl) {
+            case 100: return 4000;
+        }
     }
 }
 
-const MitType = Object.freeze({
-  PARTY: 0,
-  PERSONAL: 1,
-});
+
+
+
 
 
 const jobModifiers = {
@@ -83,6 +242,8 @@ const jobModifiers = {
     // BLU	105	120	70	100	110	115	105
     // GNB	120	59	100	110	95	60	100
     // DNC	105	79	90	100	115	85	80
+    // VPR  111	100	100	100	110	45	55
+    // PCT  105	100	50	100	110	115	80
     // Bunshin					100		
     // Living Shadow	100		100				
     // Automaton	100				100		
@@ -120,39 +281,14 @@ const jobModifiers = {
             case "BLU": return 105;
             case "GNB": return 120;
             case "DNC": return 105;
+            case "VPR": return 111;
+            case "PCT": return 105;
             default: return 100;
         }
     },
     
     MP: (job) => {
         switch(job) {
-            case "GLA": return 49;
-            case "PGL": return 34;
-            case "MRD": return 28;
-            case "LNC": return 39;
-            case "ARC": return 69;
-            case "CNJ": return 117;
-            case "THM": return 123;
-            case "PLD": return 59;
-            case "MNK": return 43;
-            case "WAR": return 38;
-            case "DRG": return 49;
-            case "BRD": return 79;
-            case "WHM": return 124;
-            case "BLM": return 129;
-            case "ACN": return 110;
-            case "SMN": return 111;
-            case "SCH": return 119;
-            case "ROG": return 38;
-            case "NIN": return 48;
-            case "MCH": return 79;
-            case "DRK": return 79;
-            case "AST": return 124;
-            case "SAM": return 40;
-            case "RDM": return 120;
-            case "BLU": return 120;
-            case "GNB": return 59;
-            case "DNC": return 79;
             default: return 100;
         }
     },
@@ -186,6 +322,8 @@ const jobModifiers = {
             case "BLU": return 70;
             case "GNB": return 100;
             case "DNC": return 90;
+            case "VPR": return 100;
+            case "PCT": return 50;
             case "Living Shadow": return 100;
             case "Automaton": return 100;
             case "Garuda": return 90;
@@ -225,6 +363,8 @@ const jobModifiers = {
             case "BLU": return 100;
             case "GNB": return 110;
             case "DNC": return 100;
+            case "VPR": return 100;
+            case "PCT": return 100;
             default: return 100;
         }
     },
@@ -258,6 +398,8 @@ const jobModifiers = {
             case "BLU": return 110;
             case "GNB": return 95;
             case "DNC": return 115;
+            case "VPR": return 110;
+            case "PCT": return 110;
             case "Bunshin": return 100;
             case "Living Shadow": return 100;
             default: return 100;
@@ -293,6 +435,8 @@ const jobModifiers = {
             case "BLU": return 115;
             case "GNB": return 60;
             case "DNC": return 85;
+            case "VPR": 45;
+            case "PCT": 115;
             case "Automaton": return 100;
             default: return 100;
         }
@@ -327,6 +471,8 @@ const jobModifiers = {
             case "BLU": return 105;
             case "GNB": return 100;
             case "DNC": return 80;
+            case "VPR": return 55;
+            case "PCT": return 80;
             default: return 100;
         }
     }
