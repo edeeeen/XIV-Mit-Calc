@@ -243,7 +243,7 @@ function getShieldValue(mit) {
     console.log(job)
     potency = mit.potency;
     mainStatVal = parseInt(document.getElementById(job+"mainStatInput").value);
-    det = parseInt(document.getElementById(job+"Det").value);
+    det = parseInt(document.getElementById(job+"detInput").value);
     tnc = 400
     let tanks = ["WAR", "PLD", "DRK", "GNB"]
     if(tanks.includes(job)) { 
@@ -555,6 +555,7 @@ document.addEventListener("DOMContentLoaded", () => {
     createPartyList()
     updateMit()
     updatePartyList()
+    calculateDamage()
     document.getElementById("mitInput").addEventListener("input", calculateDamage)
     document.getElementById("mitDropdown").addEventListener("input", calculateDamage)
     document.getElementById("personalsCheckbox").addEventListener("input", updatePartyList)
