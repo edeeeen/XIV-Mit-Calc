@@ -46,8 +46,6 @@ function addMit() {
         }
     });
 
-    console.log(shields)
-
 
     // ======== SHIELD MITS ==============
     // sort in consumption prio
@@ -156,7 +154,40 @@ function vitalityListener(event, job, lvl = 100) {
     }
 }
 
+function checkStatsInput(checkbox, jobId) {
+    let shieldsEnabled = document.getElementById("shieldsCheckbox").checked;
+    
+    if (!shieldsEnabled) {
+        checkbox.disabled = false;
+        return;
+    }
 
+    let mainStatInput = document.getElementById(jobId + "mainStatInput");
+    let detInput = document.getElementById(jobId + "detInput");
+    let CRTInput = document.getElementById(jobId + "CRTInput");
+    let weaponDamageInput = document.getElementById(jobId + "weaponDamageInput");
+    let TNCInput = document.getElementById(jobId + "TNCInput");
+
+    const tanks = ["WAR", "PLD", "DRK", "GNB"];
+    let isTank = tanks.includes(jobId);
+
+    // Basic stats required for all jobs
+    let hasBasicStats = mainStatInput && mainStatInput.value.trim() !== '' &&
+                        detInput && detInput.value.trim() !== '' &&
+                        CRTInput && CRTInput.value.trim() !== '' &&
+                        weaponDamageInput && weaponDamageInput.value.trim() !== '';
+
+    // Tank requires TNC as well
+    let hasTankStat = !isTank || (TNCInput && TNCInput.value.trim() !== '');
+
+    if (hasBasicStats && hasTankStat) {
+        checkbox.disabled = false; 
+    } else {
+        checkbox.disabled = true;
+        checkbox.checked = false;
+        addMit();
+    }
+}
 
 
 // creates mit list
@@ -217,15 +248,42 @@ function updateMit(element) {
         checkbox.addEventListener("change", addMit);
         
         // can be less jank if i fix this whole function
+
+
+        
+
         let mitObject = mitOptions.find(m => m.name === mit);
-        extraMit = mitObject.shield;
-        extraMitType = null;
-        if(extraMit != null) {
-            extraMitType = extraMit.mitType;
-        }
-        if( (mitObject.mitType === MitType.PERSONALSHIELD || mitObject.mitType === MitType.PARTYSHIELD 
-            || extraMitType === MitType.PERSONALSHIELD || extraMitType === MitType.PARTYSHIELD) && mitObject.jobs.length == 1) {
-            console.log(mit)
+        let rawShield = mitObject.shield ? mitObject.shield : mitObject;
+        const hasShield = mitObject.mitType === MitType.PERSONALSHIELD || 
+                  mitObject.mitType === MitType.PARTYSHIELD || 
+                  (mitObject.shield && (mitObject.shield.mitType === MitType.PERSONALSHIELD || mitObject.shield.mitType === MitType.PARTYSHIELD));
+
+
+        if (hasShield && rawShield.jobs && rawShield.jobs.length === 1) {
+            let jobId = rawShield.jobs[0];
+
+            // Disable by default until stats are validated
+            checkbox.disabled = true;
+
+            let mainStatInput = document.getElementById(jobId + "mainStatInput");
+            let detInput = document.getElementById(jobId + "detInput");
+            let CRTInput = document.getElementById(jobId + "CRTInput");
+            let weaponDamageInput = document.getElementById(jobId + "weaponDamageInput");
+
+            if (mainStatInput && detInput && CRTInput && weaponDamageInput) {
+                mainStatInput.addEventListener('input', () => checkStatsInput(checkbox, jobId, mitObject));
+                detInput.addEventListener('input', () => checkStatsInput(checkbox, jobId, mitObject));
+                CRTInput.addEventListener('input', () => checkStatsInput(checkbox, jobId, mitObject));
+                weaponDamageInput.addEventListener('input', () => checkStatsInput(checkbox, jobId, mitObject));
+            }
+
+            let TNCInput = document.getElementById(jobId + "TNCInput");
+            if (TNCInput) {
+                TNCInput.addEventListener('input', () => checkStatsInput(checkbox, jobId, mitObject));
+            }
+
+            // Run check immediately to set correct disabled state
+            checkStatsInput(checkbox, jobId, mitObject);
         }
 
         var label = document.createElement("label");
