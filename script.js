@@ -603,6 +603,17 @@ function createPartyList() {
         
 }
 
+function shieldCheckbox (element) {
+    shieldsInfo = document.getElementById("tempShields")
+    shieldsEnabled = element.checked
+    console.log(shieldsEnabled)
+    if(shieldsEnabled) {
+        shieldsInfo.style.display = "block"
+    } else {
+        shieldsInfo.style.display = "none"
+    }
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
     for (var i = 0; i < jobs.length; i++) {
@@ -614,7 +625,9 @@ document.addEventListener("DOMContentLoaded", () => {
     updateMit()
     updatePartyList()
     calculateDamage()
+    shieldCheckbox(document.getElementById("shieldsCheckbox"))
     document.getElementById("mitInput").addEventListener("input", calculateDamage)
     document.getElementById("mitDropdown").addEventListener("input", calculateDamage)
+    document.getElementById("shieldsCheckbox").addEventListener("input", (e) => {shieldCheckbox(e.target)});
     document.getElementById("personalsCheckbox").addEventListener("input", updatePartyList)
 });
