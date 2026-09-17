@@ -164,93 +164,25 @@ function updatePartyList() {
         
         let jobId = job.id;
 
-        if (job.checked && !document.getElementById(jobId + "PartyList")) {
-            let jobDiv = document.createElement("div");
-            jobDiv.id = jobId + "PartyList";
+        jobDiv = document.getElementById(jobId + "PartyList")
 
-            let jobName = document.createElement("h3");
-            jobName.innerText = jobId;
-            jobDiv.append(jobName);
+        if (job.checked && document.getElementById(jobId + "PartyList")) {
 
-            let healthText = document.createElement("p");
-            healthText.innerText = "Health: ";
-
-            let health = document.createElement("span");
-            health.innerText = "0";
-            health.id = jobId + "Health";
-            healthText.append(health);
-            jobDiv.append(healthText);
-
-            let vitalityP = document.createElement("p");
-            vitalityP.innerText = "Vitality ";
-
-            let vitalityInput = document.createElement("input");
-            vitalityInput.type = "number";
-            vitalityInput.id = jobId + "Vitality";
-            
-            vitalityInput.addEventListener("input", (e) => vitalityListener(e, jobId));
-
-            vitalityP.append(vitalityInput);
-            jobDiv.append(vitalityP);
-            
+            //jobDiv = document.getElementById(jobId + "PartyList")
 
             // need to check which of these is actually needed
+            jobDiv.style.display = "block"
 
-            mainStatP = document.createElement("p")
-            mainStatP.innerText = "Main Stat "
-            mainStatInput = document.createElement("input")
-            mainStatInput.id = jobId + "mainStatInput"
-            mainStatP.append(mainStatInput)
-            mainStatP.id = "mainStat"
-            jobDiv.append(mainStatP)
+
+        } else {
             
-            // none of this needs to exist for jobs that dont have potency shields
-            if(hasPotencyShields.includes(jobId)) {
-                det = document.createElement("p")
-                det.innerText = "DET"
-                detInput = document.createElement("input")
-                detInput.id = jobId + "Det"
-                det.append(detInput)
-                det.id = "det"
-                jobDiv.append(det)
-                
-
-                // only show if tank
-                let tanks = ["WAR", "PLD", "DRK", "GNB"]
-                if(tanks.includes(jobId)) {
-                    TNC = document.createElement("p")
-                    TNC.innerText = "TNC"
-                    TNCInput = document.createElement("input")
-                    TNCInput.id = jobId+"TNCInput"
-                    TNC.append(TNCInput)
-                    TNC.id = "TNC"
-                    jobDiv.append(TNC)
-                }
-                
-                
-
-                CRT = document.createElement("p")
-                CRT.innerText = "CRT"
-                CRTInput = document.createElement("input")
-                CRTInput.id = jobId + "CRTInput"
-                CRT.append(CRTInput)
-                CRT.id = "CRT"
-                jobDiv.append(CRT)
-            
-
-                weaponDamage = document.createElement("p")
-                weaponDamage.innerText = "WD"
-                weaponDamageInput = document.createElement("input")
-                weaponDamageInput.id = jobId + "weaponDamageInput"
-                weaponDamage.append(weaponDamageInput)
-                weaponDamage.id = "weaponDamage"
-                jobDiv.append(weaponDamage)
-            }
-            
-            partylist.append(jobDiv);
         }
+
+            
+            
+        
         if (!jobs[j].checked && document.getElementById(jobs[j].id+"PartyList")) {
-            document.getElementById(jobs[j].id+"PartyList").remove()
+            jobDiv.style.display = "hidden"
         }
     }
 }
@@ -438,8 +370,99 @@ function calculateDamage() {
 
 
 
+function createPartyList() {
+        let partylist = document.getElementById("partyList");
+
+    jobsOrder.forEach((job)=> {
+        let jobDiv = document.createElement("div");
+        jobDiv.id = job + "PartyList";
+
+        let jobName = document.createElement("h3");
+        jobName.innerText = job;
+        jobDiv.append(jobName);
+
+        let healthText = document.createElement("p");
+        healthText.innerText = "Health: ";
+
+        let health = document.createElement("span");
+        health.innerText = "0";
+        health.id = job + "Health";
+        healthText.append(health);
+        jobDiv.append(healthText);
+
+        let vitalityP = document.createElement("p");
+        vitalityP.innerText = "Vitality ";
+
+        let vitalityInput = document.createElement("input");
+        vitalityInput.type = "number";
+        vitalityInput.id = job + "Vitality";
+        
+        vitalityInput.addEventListener("input", (e) => vitalityListener(e, job));
+
+        vitalityP.append(vitalityInput);
+        jobDiv.append(vitalityP);
+
+        
+        
+        // none of this needs to exist for jobs that dont have potency shields
+        if(hasPotencyShields.includes(job)) {
+            mainStatP = document.createElement("p")
+            mainStatP.innerText = "Main Stat "
+            mainStatInput = document.createElement("input")
+            mainStatInput.id = job + "mainStatInput"
+            mainStatP.append(mainStatInput)
+            mainStatP.id = "mainStat"
+            jobDiv.append(mainStatP)
+
+            det = document.createElement("p")
+            det.innerText = "DET"
+            detInput = document.createElement("input")
+            detInput.id = job + "Det"
+            det.append(detInput)
+            det.id = "det"
+            jobDiv.append(det)
+            
+
+            // only show if tank
+            let tanks = ["WAR", "PLD", "DRK", "GNB"]
+            if(tanks.includes(job)) {
+                TNC = document.createElement("p")
+                TNC.innerText = "TNC"
+                TNCInput = document.createElement("input")
+                TNCInput.id = job+"TNCInput"
+                TNC.append(TNCInput)
+                TNC.id = "TNC"
+                jobDiv.append(TNC)
+            }
+
+            CRT = document.createElement("p")
+            CRT.innerText = "CRT"
+            CRTInput = document.createElement("input")
+            CRTInput.id = job + "CRTInput"
+            CRT.append(CRTInput)
+            CRT.id = "CRT"
+            jobDiv.append(CRT)
+        
+
+            weaponDamage = document.createElement("p")
+            weaponDamage.innerText = "WD"
+            weaponDamageInput = document.createElement("input")
+            weaponDamageInput.id = job + "weaponDamageInput"
+            weaponDamage.append(weaponDamageInput)
+            weaponDamage.id = "weaponDamage"
+            jobDiv.append(weaponDamage)
+        }
+        jobDiv.style.display = "none"
+
+        partylist.append(jobDiv);
+    })
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
+    createPartyList()
     updateMit()
+    updatePartyList()
     document.getElementById("mitInput").addEventListener("input", calculateDamage)
     document.getElementById("mitDropdown").addEventListener("input", calculateDamage)
 });

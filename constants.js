@@ -8,6 +8,15 @@ const consumtionPriority = ["Arcane Crest", "Tempera Coat", "Tempura Grassa", "E
     "Shake it Off", "Divine Veil", "Neutral Sect", "Improvised Finish", "Adloquium", "Manifestation",
     "Succor", "Concitation", "Accession"]
 
+
+const jobsOrder = [
+    "WAR", "PLD", "GNB", "DRK",
+    "WHM", "AST", "SCH",  "SGE",
+    "MNK", "DRG", "NIN", "SAM", "RPR", "VPR",
+    "BRD", "MCH", "DNC",
+    "BLM", "SMN", "RDM", "PCT"
+]
+
 const statsEnum = Object.freeze({
     //HP MP	STR	VIT	DEX	INT	MND
     HP: 0,
