@@ -6,7 +6,8 @@ var max = 0
 var min = 0
 var base = 0
 
-const hasPotencyShields = ["WAR", "PLD", "SGE", "SCH", "AST", "WHM"]
+const hasPotencyShields = ["SGE", "SCH", "AST", "WHM"]
+const hasSingleTargetPotencyShields = ["WAR", "PLD"]
 
 
 function addMit() {
@@ -155,40 +156,10 @@ function vitalityListener(event, job, lvl = 100) {
     }
 }
 
-function updatePartyList() {
-    let partylist = document.getElementById("partyList");
-
-    for (let j = 0; j < jobs.length; j++) {
-        let job = jobs[j];
-        if (!job) continue;
-        
-        let jobId = job.id;
-
-        jobDiv = document.getElementById(jobId + "PartyList")
-
-        if (job.checked && document.getElementById(jobId + "PartyList")) {
-
-            //jobDiv = document.getElementById(jobId + "PartyList")
-
-            // need to check which of these is actually needed
-            jobDiv.style.display = "block"
-
-
-        } else {
-            
-        }
-
-            
-            
-        
-        if (!jobs[j].checked && document.getElementById(jobs[j].id+"PartyList")) {
-            jobDiv.style.display = "hidden"
-        }
-    }
-}
 
 
 
+// creates mit list
 function updateMit(element) {
     var availableMits = new Set();
     for (var j = 0; j < jobs.length; j++) {
@@ -244,6 +215,19 @@ function updateMit(element) {
         }
         // Add event listener to update the damage calculation when a mit option is checked or unchecked
         checkbox.addEventListener("change", addMit);
+        
+        // can be less jank if i fix this whole function
+        let mitObject = mitOptions.find(m => m.name === mit);
+        extraMit = mitObject.shield;
+        extraMitType = null;
+        if(extraMit != null) {
+            extraMitType = extraMit.mitType;
+        }
+        if( (mitObject.mitType === MitType.PERSONALSHIELD || mitObject.mitType === MitType.PARTYSHIELD 
+            || extraMitType === MitType.PERSONALSHIELD || extraMitType === MitType.PARTYSHIELD) && mitObject.jobs.length == 1) {
+            console.log(mit)
+        }
+
         var label = document.createElement("label");
         label.htmlFor = mit;
         label.appendChild(checkbox);
@@ -348,13 +332,7 @@ function tempShieldsTest() {
     document.getElementById("tempShieldCritMid").innerText = shields.HCrit;
 }
 
-for (var i = 0; i < jobs.length; i++) {
-    jobs[i].addEventListener("change", (e) => {
-        updateMit(e)
-    });
-}
 
-updateMit();
 
 function calculateDamage() {
     var damageInput = document.getElementById("mitInput").value;
@@ -369,11 +347,92 @@ function calculateDamage() {
 }
 
 
+function updatePartyList() {
+    let partylist = document.getElementById("partyList");
+
+    for (let j = 0; j < jobs.length; j++) {
+        let job = jobs[j];
+        if (!job) continue;
+        
+        let jobId = job.id;
+
+        jobDiv = document.getElementById(jobId + "PartyList")
+
+        if (job.checked && document.getElementById(jobId + "PartyList")) {         
+            jobDiv = document.getElementById(jobId + "PartyList")
+            jobDiv.style.display = "flex"
+
+            let mainStatInput = document.getElementById(jobId + "mainStatInput")
+            let mainStatP = document.getElementById(jobId + "mainStat")
+            let detInput = document.getElementById(jobId + "detInput")
+            let det = document.getElementById(jobId + "det")
+            let CRTInput = document.getElementById(jobId + "CRTInput")
+            let CRT = document.getElementById(jobId + "CRT")
+            let weaponDamageInput = document.getElementById(jobId + "weaponDamageInput")
+            let weaponDamage = document.getElementById(jobId + "weaponDamage")
+            let TNCInput = document.getElementById(jobId + "TNCInput")
+            let TNC = document.getElementById(jobId + "TNC")
+
+
+            // show/hide tank stats based off of personals checkbox (only jobs with personal potency shields)
+            if(document.getElementById("personalsCheckbox").checked && hasSingleTargetPotencyShields.includes(jobId)) {
+                if (mainStatP) mainStatP.style.display = "flex";
+                if (mainStatInput) mainStatInput.style.display = "flex";
+                if (detInput) detInput.style.display = "flex";
+                if (det) det.style.display = "flex";
+                if (CRTInput) CRTInput.style.display = "flex";
+                if (CRT) CRT.style.display = "flex";
+                if (weaponDamageInput) weaponDamageInput.style.display = "flex";
+                if (weaponDamage) weaponDamage.style.display = "flex";
+                if (TNC) TNC.style.display = "flex";
+                if (TNCInput) TNCInput.style.display = "flex";
+            } else if (!document.getElementById("personalsCheckbox").checked && hasSingleTargetPotencyShields.includes(jobId)) {
+                if (mainStatP) mainStatP.style.display = "none";
+                if (mainStatInput) mainStatInput.style.display = "none";
+                if (detInput) detInput.style.display = "none";
+                if (det) det.style.display = "none";
+                if (CRTInput) CRTInput.style.display = "none";
+                if (CRT) CRT.style.display = "none";
+                if (weaponDamageInput) weaponDamageInput.style.display = "none";
+                if (weaponDamage) weaponDamage.style.display = "none";
+                if (TNCInput) TNCInput.style.display = "none";
+                if (TNC) TNC.style.display = "none";
+            }
+            // show/hide healer/tank stats based off of shield checkbox
+            if(document.getElementById("shieldsCheckbox").checked && (hasPotencyShields.includes(jobId))) {
+                if (mainStatP) mainStatP.style.display = "flex";
+                if (mainStatInput) mainStatInput.style.display = "flex";
+                if (detInput) detInput.style.display = "flex";
+                if (det) det.style.display = "flex";
+                if (CRTInput) CRTInput.style.display = "flex";
+                if (CRT) CRT.style.display = "flex";
+                if (weaponDamageInput) weaponDamageInput.style.display = "flex";
+                if (weaponDamage) weaponDamage.style.display = "flex";
+            } else if (!document.getElementById("shieldsCheckbox").checked && (hasPotencyShields.includes(jobId) || hasSingleTargetPotencyShields.includes(jobId))) {
+                if (mainStatP) mainStatP.style.display = "none";
+                if (mainStatInput) mainStatInput.style.display = "none";
+                if (detInput) detInput.style.display = "none";
+                if (det) det.style.display = "none";
+                if (CRTInput) CRTInput.style.display = "none";
+                if (CRT) CRT.style.display = "none";
+                if (weaponDamageInput) weaponDamageInput.style.display = "none";
+                if (weaponDamage) weaponDamage.style.display = "none";
+                if (TNCInput) TNCInput.style.display = "none";
+                if (TNC) TNC.style.display = "none";
+            }
+
+
+        } else {
+            jobDiv.style.display = "none"
+        }
+    }
+}
 
 function createPartyList() {
-        let partylist = document.getElementById("partyList");
+    let partylist = document.getElementById("partyList");
 
     jobsOrder.forEach((job)=> {
+    
         let jobDiv = document.createElement("div");
         jobDiv.id = job + "PartyList";
 
@@ -405,64 +464,98 @@ function createPartyList() {
         
         
         // none of this needs to exist for jobs that dont have potency shields
-        if(hasPotencyShields.includes(job)) {
-            mainStatP = document.createElement("p")
-            mainStatP.innerText = "Main Stat "
-            mainStatInput = document.createElement("input")
-            mainStatInput.id = job + "mainStatInput"
-            mainStatP.append(mainStatInput)
-            mainStatP.id = "mainStat"
-            jobDiv.append(mainStatP)
-
-            det = document.createElement("p")
-            det.innerText = "DET"
-            detInput = document.createElement("input")
-            detInput.id = job + "Det"
-            det.append(detInput)
-            det.id = "det"
-            jobDiv.append(det)
-            
-
-            // only show if tank
-            let tanks = ["WAR", "PLD", "DRK", "GNB"]
-            if(tanks.includes(job)) {
-                TNC = document.createElement("p")
-                TNC.innerText = "TNC"
-                TNCInput = document.createElement("input")
-                TNCInput.id = job+"TNCInput"
-                TNC.append(TNCInput)
-                TNC.id = "TNC"
-                jobDiv.append(TNC)
-            }
-
-            CRT = document.createElement("p")
-            CRT.innerText = "CRT"
-            CRTInput = document.createElement("input")
-            CRTInput.id = job + "CRTInput"
-            CRT.append(CRTInput)
-            CRT.id = "CRT"
-            jobDiv.append(CRT)
         
+        mainStatP = document.createElement("p")
+        mainStatP.innerText = "Main Stat "
+        mainStatInput = document.createElement("input")
+        mainStatInput.id = job + "mainStatInput"
+        mainStatP.id =  job +  "mainStat"
 
-            weaponDamage = document.createElement("p")
-            weaponDamage.innerText = "WD"
-            weaponDamageInput = document.createElement("input")
-            weaponDamageInput.id = job + "weaponDamageInput"
-            weaponDamage.append(weaponDamageInput)
-            weaponDamage.id = "weaponDamage"
-            jobDiv.append(weaponDamage)
+        det = document.createElement("p")
+        det.innerText = "DET"
+        detInput = document.createElement("input")
+        detInput.id = job + "detInput"
+        det.id =  job +  "det"
+
+        TNC = document.createElement("p")
+        TNC.innerText = "TNC"
+        TNCInput = document.createElement("input")
+        TNCInput.id = job+"TNCInput"
+        TNC.id =  job + "TNC"
+
+        CRT = document.createElement("p")
+        CRT.innerText = "CRT"
+        CRTInput = document.createElement("input")
+        CRTInput.id = job + "CRTInput"
+        CRT.id =  job + "CRT"
+
+        weaponDamage = document.createElement("p")
+        weaponDamage.innerText = "WD"
+        weaponDamageInput = document.createElement("input")
+        weaponDamageInput.id = job + "weaponDamageInput"
+        weaponDamage.id =  job + "weaponDamage"
+
+        TNCInput.style.display = "none"
+        TNC.style.display = "none"
+        
+        if(!hasPotencyShields.includes(job)) {
+            mainStatInput.style.display = "none"
+            mainStatP.style.display = "none"
+            detInput.style.display = "none"
+            det.style.display = "none"
+            CRTInput.style.display = "none"
+            CRT.style.display = "none"
+            weaponDamageInput.style.display = "none"
+            weaponDamage.style.display = "none"
         }
-        jobDiv.style.display = "none"
+        // only show if tank
+        if(document.getElementById("personalsCheckbox").checked && hasSingleTargetPotencyShields.includes(job)) {
+            mainStatInput.style.display = "flex"
+            mainStatP.style.display = "flex"
+            detInput.style.display = "flex"
+            det.style.display = "flex"
+            CRTInput.style.display = "flex"
+            CRT.style.display = "flex"
+            weaponDamageInput.style.display = "flex"
+            weaponDamage.style.display = "flex"
+            TNCInput.style.display = "flex"
+            TNC.style.display = "flex"
+        }
+        mainStatP.append(mainStatInput)
+        jobDiv.append(mainStatP)
+        det.append(detInput)
+        jobDiv.append(det)
+        TNC.append(TNCInput)
+        jobDiv.append(TNC)
+        CRT.append(CRTInput)
+        jobDiv.append(CRT)
+        weaponDamage.append(weaponDamageInput)
+        jobDiv.append(weaponDamage)
+
+        if(!job.checked) {
+            jobDiv.style.display = "none"
+        }
+
+
+        // jobDiv.style.display = "none"
 
         partylist.append(jobDiv);
+        
     })
+        
 }
 
 
 document.addEventListener("DOMContentLoaded", () => {
+    for (var i = 0; i < jobs.length; i++) {
+        jobs[i].addEventListener("change", (e) => {
+            updateMit(e)
+        });
+    }
     createPartyList()
     updateMit()
     updatePartyList()
     document.getElementById("mitInput").addEventListener("input", calculateDamage)
     document.getElementById("mitDropdown").addEventListener("input", calculateDamage)
+    document.getElementById("personalsCheckbox").addEventListener("input", updatePartyList)
 });

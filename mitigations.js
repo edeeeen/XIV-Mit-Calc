@@ -41,9 +41,9 @@ var mitOptions = [];
 // ==== Tank ====
 mitOptions.push(new percentMit("Reprisal", 0.10, 0.10, ["PLD", "WAR", "DRK", "GNB"], MitType.PARTY));
 mitOptions.push(new percentMit("Rampart", 0.20, 0.20, ["PLD", "WAR", "DRK", "GNB"], MitType.PERSONAL));
-mitOptions.push(new percentMit("Tank LB1", 0.40, 0.40, ["PLD", "WAR", "DRK", "GNB"], MitType.PERSONAL));
-mitOptions.push(new percentMit("Tank LB2", 0.20, 0.20, ["PLD", "WAR", "DRK", "GNB"], MitType.PERSONAL));
-mitOptions.push(new percentMit("Tank LB3", 0.80, 0.80, ["PLD", "WAR", "DRK", "GNB"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Tank LB1", 0.40, 0.40, ["PLD", "WAR", "DRK", "GNB"], MitType.PARTY));
+mitOptions.push(new percentMit("Tank LB2", 0.20, 0.20, ["PLD", "WAR", "DRK", "GNB"], MitType.PARTY));
+mitOptions.push(new percentMit("Tank LB3", 0.80, 0.80, ["PLD", "WAR", "DRK", "GNB"], MitType.PARTY));
 
 // GNB
 mitOptions.push(new percentMit("Heart of Light", 0.05, 0.10, ["GNB"], MitType.PARTY));
