@@ -190,7 +190,7 @@ const attribute = {
         }
     }
 }
-
+// https://www.akhmorning.com/allagan-studies/modifiers/levelmods/
 const stats = {
     main: (lvl) => {
         switch (lvl) {

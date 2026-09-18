@@ -228,5 +228,9 @@ function healthCalculation(vitality, job, lvl = 100) {
 
     const bonusHP = Math.floor((vitality - baseMain) * vitScalar);
 
+    if(jobBaseHP + bonusHP < 0) {
+        return jobBaseHP
+    }
+
     return jobBaseHP + bonusHP;
 }

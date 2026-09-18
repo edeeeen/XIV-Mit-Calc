@@ -304,6 +304,8 @@ function getJobAttributeModifier(stat, job) {
 // https://docs.google.com/spreadsheets/d/1YAuklyu4IJCFUdk1KERmCP0F_SRkhJpSRvU0hazStj0/edit?gid=2139215610#gid=2139215610
 // Caro is the goat
 function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", lvl = 100) {
+    main = main * partyBonus // add party bonus 1.0-1.05
+    
     let fDET = Math.floor(140 * (det - stats.main(lvl)) / stats.div(lvl) + 1000);
     const tanks = ["PLD", "DRK", "WAR", "GNB"]
     let fTNC = 1000

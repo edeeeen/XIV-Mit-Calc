@@ -62,7 +62,17 @@
             border: 1px solid;
             padding: 10px;
         }
+        #resultsContainer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
 
+        #tempShields {
+            display: flex;
+            flex-direction: column;
+        }
     </style>
 </head>
 <body>
@@ -90,24 +100,29 @@
     <div id="partyList">
     </div>
 
-    <div id="tempShields">
-        <h3>Potency Shields</h3>
-        <p>High: <span id="tempShieldHigh">0</span></p>
-        <p>Low: <span id="tempShieldLow">0</span></p>
-        <p>Mid: <span id="tempShieldMid">0</span></p>
-        <h3>Crit:</h3>
-        <p>Low: <span id="tempShieldCritLow">0</span></p>
-        <p>Mid: <span id="tempShieldCritMid">0</span></p>
-        <p>High: <span id="tempShieldCritHigh">0</span></p>
+    <div id="resultsContainer">
+        <div id="result">
+            <h3>Max:  <span id="maxDamage">0</span></h3>
+            <h3>Base: <span id="baseDamage">0</span></h3>
+            <h3>Min:   <span id="minDamage">0</span></h3>
+            <h3>Total Mit Percent: <span id="totalMitPercent">0%</span></h3>
+
+        </div> 
+        
+        <div id="tempShields">
+            <h3>Potency Shields</h3>
+            <p>High: <span id="tempShieldHigh">0</span></p>
+            <p>Low: <span id="tempShieldLow">0</span></p>
+            <p>Mid: <span id="tempShieldMid">0</span></p>
+            <h3>Crit:</h3>
+            <p>Low: <span id="tempShieldCritLow">0</span></p>
+            <p>Mid: <span id="tempShieldCritMid">0</span></p>
+            <p>High: <span id="tempShieldCritHigh">0</span></p>
+        </div>
+
+        
     </div>
 
-    <div id="result">
-        <h3>Max:  <span id="maxDamage">0</span></h3>
-        <h3>Base: <span id="baseDamage">0</span></h3>
-        <h3>Min:   <span id="minDamage">0</span></h3>
-        <h3>Total Mit Percent: <span id="totalMitPercent">0%</span></h3>
-
-    </div> 
     <div id="mitsAndParty">
 
         <div id = "partyComp">
@@ -209,6 +224,7 @@
                 <td>Party Bonus</td>
                 <td id="PartyBonus"></td>
             </tr>
+            
         </table>
     </div>
 </body>

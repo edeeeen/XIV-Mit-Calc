@@ -28,7 +28,7 @@ class shield {
     multiplier;
     jobs;
     mitType;
-    pet; // exists because pets actions aren't affected by party bonus
+    pet; // exists because pets actions aren't affected by party bonus, this literally only affects consolation
     constructor(name, potency, multiplier, jobs, mitType, pet = false){
         this.name = name;
         this.potency = potency;
@@ -110,7 +110,7 @@ mitOptions.push(new percentMit("Expedient", 0.10, 0.10, ["SCH"], MitType.PARTY))
 mitOptions.push(new percentMit("Protraction", 0.10, 0.10, ["SCH"], MitType.PERSONAL));
 mitOptions.push(new shield("Adloquium", 300, 1.80, ["SCH"], MitType.PERSONALSHIELD))
 mitOptions.push(new shield("Concitation", 200, 1.80, ["SCH"], MitType.PARTYSHIELD))
-mitOptions.push(new shield("Consolation", 250, 1, ["SCH"], MitType.PARTYSHIELD))
+mitOptions.push(new shield("Consolation", 250, 1, ["SCH"], MitType.PARTYSHIELD, true))
 mitOptions.push(new shield("Accession", 240, 1.80, ["SCH"], MitType.PARTYSHIELD))
 mitOptions.push(new shield("Manifestation", 360, 1.80, ["SCH"], MitType.PARTYSHIELD))
 // TODO: spreadlo
