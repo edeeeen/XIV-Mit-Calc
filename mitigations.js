@@ -28,12 +28,14 @@ class shield {
     multiplier;
     jobs;
     mitType;
-    constructor(name, potency, multiplier, jobs, mitType){
+    pet; // exists because pets actions aren't affected by party bonus
+    constructor(name, potency, multiplier, jobs, mitType, pet = false){
         this.name = name;
         this.potency = potency;
         this.jobs = jobs;
         this.multiplier = multiplier;
         this.mitType = mitType;
+        this.pet = pet;
     }
 }
 
@@ -128,7 +130,7 @@ mitOptions.push(new shield("Haima", 300, 1, ["SGE"], MitType.PERSONALSHIELD));
 mitOptions.push(new percentMit("Plenary Indulgence", 0.10, 0.10, ["WHM"], MitType.PARTY)); // TODO: Add % healing potency increase
 mitOptions.push(new percentMit("Temperance", 0.10, 0.10, ["WHM"], MitType.PARTY));
 mitOptions.push(new shield("Divine Caress", 400, 1, ["WHM"], MitType.PARTYSHIELD))
-mitOptions.push(new percentMit("Aquaveil", 0.10, 0.10, ["WHM"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Aquaveil", 0.15, 0.15, ["WHM"], MitType.PERSONAL));
 mitOptions.push(new shield("Divine Benison", 500, 1, ["WHM"], MitType.PERSONALSHIELD))
 
 // TODO: Add asylum % healing potency increase

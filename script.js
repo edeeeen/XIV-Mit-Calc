@@ -9,6 +9,16 @@ var base = 0
 const hasPotencyShields = ["SGE", "SCH", "AST", "WHM"]
 const hasSingleTargetPotencyShields = ["WAR", "PLD"]
 
+var checkboxes = {
+    enablePersonalMits: false,
+    enableShields: false,
+    enableTooMuchInfo: false,
+    enablePartyBuff: false,
+    simulatePartyBonus: false
+}
+
+var partyBonus = 1.0
+
 
 function addMit() {
     updatePartyList();
@@ -83,9 +93,6 @@ function addMit() {
         document.getElementById("tempShieldCritMid").innerText = allShields.map(item => item.HCrit).join(" + ") + " = " + allShields.reduce((sum, item) => sum + item.HCrit, 0);
         document.getElementById("tempShieldCritLow").innerText = allShields.map(item => item.HCritLow).join(" + ") + " = " + allShields.reduce((sum, item) => sum + item.HCritLow, 0);
     }
-
-    
-
     
     // ======== NORMAL MITS ==============
     // update max
@@ -121,37 +128,6 @@ function addMit() {
     document.getElementById("baseDamage").innerText = baseString;
     document.getElementById("minDamage").innerText = minString;
     document.getElementById("totalMitPercent").innerText = (Math.round((1 - totalMit) * 10000)/100) + "%";
-}
-
-// calculate health from vitality
-// tank calc is slightly different and off by a bit
-function healthCalculation(vitality, job, lvl = 100) {
-    // Level base constants
-    const baseHP = stats.hp(lvl);       // 4400 at lvl 100
-    const baseMain = stats.main(lvl);   // 440 at lvl 100
-
-    // HP modifier lookup
-    const hpModifier = getJobAttributeModifier(statsEnum.HP, job);
-
-    // Baseline HP for job at level
-    const jobBaseHP = Math.floor((baseHP * hpModifier) / 100);
-
-    const isTank = ["WAR", "PLD", "DRK", "GNB"].includes(job);
-    const vitScalar = hpPerVit(lvl, isTank); 
-    console.log(vitScalar)
-
-    const bonusHP = Math.floor((vitality - baseMain) * vitScalar);
-
-    return jobBaseHP + bonusHP;
-}
-
-// checks when user types in vitality
-function vitalityListener(event, job, lvl = 100) {
-    healthElement = document.getElementById(job + "Health");
-    if (healthElement) {
-        let vitValue = event.target.value;
-        healthElement.innerText = healthCalculation(vitValue, job);
-    }
 }
 
 function checkStatsInput(checkbox, jobId) {
@@ -359,6 +335,17 @@ function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", lvl = 
     let H3 = H2;
     let H3Crit = Math.floor(H2 * fCRIT / 1000);
 
+    if(checkboxes.enableTooMuchInfo) {
+        document.getElementById("fCRT").innerText = fCRIT
+        document.getElementById("fTNC").innerText = fTNC
+        document.getElementById("fDET").innerText = fDET
+        document.getElementById("fHMP").innerText = fHMP
+        document.getElementById("fWD").innerText = fWD
+        document.getElementById("H1").innerText = H1
+        document.getElementById("H2").innerText = H2
+        document.getElementById("HCrit").innerText = H3Crit
+    }
+
     return {
         H: H3,
         HLow: Math.floor(H3 * 97 / 100),
@@ -368,7 +355,6 @@ function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", lvl = 
         HCritHigh: Math.floor(H3Crit * 103 / 100)
     };
 }
-
 
 function tempShieldsTest() {
     var potency = document.getElementById("potencyInput").value;
@@ -390,8 +376,6 @@ function tempShieldsTest() {
     document.getElementById("tempShieldCritMid").innerText = shields.HCrit;
 }
 
-
-
 function calculateDamage() {
     var damageInput = document.getElementById("mitInput").value;
     max = damageInput * 1.05;
@@ -404,216 +388,30 @@ function calculateDamage() {
     addMit();
 }
 
-
-function updatePartyList() {
-    let partylist = document.getElementById("partyList");
-
-    for (let j = 0; j < jobs.length; j++) {
-        let job = jobs[j];
-        if (!job) continue;
-        
-        let jobId = job.id;
-
-        jobDiv = document.getElementById(jobId + "PartyList")
-
-        if (job.checked && document.getElementById(jobId + "PartyList")) {         
-            jobDiv = document.getElementById(jobId + "PartyList")
-            jobDiv.style.display = "flex"
-
-            let mainStatInput = document.getElementById(jobId + "mainStatInput")
-            let mainStatP = document.getElementById(jobId + "mainStat")
-            let detInput = document.getElementById(jobId + "detInput")
-            let det = document.getElementById(jobId + "det")
-            let CRTInput = document.getElementById(jobId + "CRTInput")
-            let CRT = document.getElementById(jobId + "CRT")
-            let weaponDamageInput = document.getElementById(jobId + "weaponDamageInput")
-            let weaponDamage = document.getElementById(jobId + "weaponDamage")
-            let TNCInput = document.getElementById(jobId + "TNCInput")
-            let TNC = document.getElementById(jobId + "TNC")
-
-
-            // show/hide tank stats based off of personals checkbox (only jobs with personal potency shields)
-            if(document.getElementById("personalsCheckbox").checked && hasSingleTargetPotencyShields.includes(jobId)) {
-                if (mainStatP) mainStatP.style.display = "flex";
-                if (mainStatInput) mainStatInput.style.display = "flex";
-                if (detInput) detInput.style.display = "flex";
-                if (det) det.style.display = "flex";
-                if (CRTInput) CRTInput.style.display = "flex";
-                if (CRT) CRT.style.display = "flex";
-                if (weaponDamageInput) weaponDamageInput.style.display = "flex";
-                if (weaponDamage) weaponDamage.style.display = "flex";
-                if (TNC) TNC.style.display = "flex";
-                if (TNCInput) TNCInput.style.display = "flex";
-            } else if (!document.getElementById("personalsCheckbox").checked && hasSingleTargetPotencyShields.includes(jobId)) {
-                if (mainStatP) mainStatP.style.display = "none";
-                if (mainStatInput) mainStatInput.style.display = "none";
-                if (detInput) detInput.style.display = "none";
-                if (det) det.style.display = "none";
-                if (CRTInput) CRTInput.style.display = "none";
-                if (CRT) CRT.style.display = "none";
-                if (weaponDamageInput) weaponDamageInput.style.display = "none";
-                if (weaponDamage) weaponDamage.style.display = "none";
-                if (TNCInput) TNCInput.style.display = "none";
-                if (TNC) TNC.style.display = "none";
-            }
-            // show/hide healer/tank stats based off of shield checkbox
-            if(document.getElementById("shieldsCheckbox").checked && (hasPotencyShields.includes(jobId))) {
-                if (mainStatP) mainStatP.style.display = "flex";
-                if (mainStatInput) mainStatInput.style.display = "flex";
-                if (detInput) detInput.style.display = "flex";
-                if (det) det.style.display = "flex";
-                if (CRTInput) CRTInput.style.display = "flex";
-                if (CRT) CRT.style.display = "flex";
-                if (weaponDamageInput) weaponDamageInput.style.display = "flex";
-                if (weaponDamage) weaponDamage.style.display = "flex";
-            } else if (!document.getElementById("shieldsCheckbox").checked && (hasPotencyShields.includes(jobId) || hasSingleTargetPotencyShields.includes(jobId))) {
-                if (mainStatP) mainStatP.style.display = "none";
-                if (mainStatInput) mainStatInput.style.display = "none";
-                if (detInput) detInput.style.display = "none";
-                if (det) det.style.display = "none";
-                if (CRTInput) CRTInput.style.display = "none";
-                if (CRT) CRT.style.display = "none";
-                if (weaponDamageInput) weaponDamageInput.style.display = "none";
-                if (weaponDamage) weaponDamage.style.display = "none";
-                if (TNCInput) TNCInput.style.display = "none";
-                if (TNC) TNC.style.display = "none";
-            }
-
-
-        } else {
-            jobDiv.style.display = "none"
-        }
-    }
-}
-
-function createPartyList() {
-    let partylist = document.getElementById("partyList");
-
-    jobsOrder.forEach((job)=> {
-    
-        let jobDiv = document.createElement("div");
-        jobDiv.id = job + "PartyList";
-
-        let jobName = document.createElement("h3");
-        jobName.innerText = job;
-        jobDiv.append(jobName);
-
-        let healthText = document.createElement("p");
-        healthText.innerText = "Health: ";
-
-        let health = document.createElement("span");
-        health.innerText = "0";
-        health.id = job + "Health";
-        healthText.append(health);
-        jobDiv.append(healthText);
-
-        let vitalityP = document.createElement("p");
-        vitalityP.innerText = "Vitality ";
-
-        let vitalityInput = document.createElement("input");
-        vitalityInput.type = "number";
-        vitalityInput.id = job + "Vitality";
-        
-        vitalityInput.addEventListener("input", (e) => vitalityListener(e, job));
-
-        vitalityP.append(vitalityInput);
-        jobDiv.append(vitalityP);
-
-        
-        
-        // none of this needs to exist for jobs that dont have potency shields
-        
-        mainStatP = document.createElement("p")
-        mainStatP.innerText = "Main Stat "
-        mainStatInput = document.createElement("input")
-        mainStatInput.id = job + "mainStatInput"
-        mainStatP.id =  job +  "mainStat"
-
-        det = document.createElement("p")
-        det.innerText = "DET"
-        detInput = document.createElement("input")
-        detInput.id = job + "detInput"
-        det.id =  job +  "det"
-
-        TNC = document.createElement("p")
-        TNC.innerText = "TNC"
-        TNCInput = document.createElement("input")
-        TNCInput.id = job+"TNCInput"
-        TNC.id =  job + "TNC"
-
-        CRT = document.createElement("p")
-        CRT.innerText = "CRT"
-        CRTInput = document.createElement("input")
-        CRTInput.id = job + "CRTInput"
-        CRT.id =  job + "CRT"
-
-        weaponDamage = document.createElement("p")
-        weaponDamage.innerText = "WD"
-        weaponDamageInput = document.createElement("input")
-        weaponDamageInput.id = job + "weaponDamageInput"
-        weaponDamage.id =  job + "weaponDamage"
-
-        TNCInput.style.display = "none"
-        TNC.style.display = "none"
-        
-        if(!hasPotencyShields.includes(job)) {
-            mainStatInput.style.display = "none"
-            mainStatP.style.display = "none"
-            detInput.style.display = "none"
-            det.style.display = "none"
-            CRTInput.style.display = "none"
-            CRT.style.display = "none"
-            weaponDamageInput.style.display = "none"
-            weaponDamage.style.display = "none"
-        }
-        // only show if tank
-        if(document.getElementById("personalsCheckbox").checked && hasSingleTargetPotencyShields.includes(job)) {
-            mainStatInput.style.display = "flex"
-            mainStatP.style.display = "flex"
-            detInput.style.display = "flex"
-            det.style.display = "flex"
-            CRTInput.style.display = "flex"
-            CRT.style.display = "flex"
-            weaponDamageInput.style.display = "flex"
-            weaponDamage.style.display = "flex"
-            TNCInput.style.display = "flex"
-            TNC.style.display = "flex"
-        }
-        mainStatP.append(mainStatInput)
-        jobDiv.append(mainStatP)
-        det.append(detInput)
-        jobDiv.append(det)
-        TNC.append(TNCInput)
-        jobDiv.append(TNC)
-        CRT.append(CRTInput)
-        jobDiv.append(CRT)
-        weaponDamage.append(weaponDamageInput)
-        jobDiv.append(weaponDamage)
-
-        if(!job.checked) {
-            jobDiv.style.display = "none"
-        }
-
-
-        // jobDiv.style.display = "none"
-
-        partylist.append(jobDiv);
-        
-    })
-        
-}
-
-function shieldCheckbox (element) {
-    shieldsInfo = document.getElementById("tempShields")
-    shieldsEnabled = element.checked
-    console.log(shieldsEnabled)
-    if(shieldsEnabled) {
-        shieldsInfo.style.display = "block"
+function tooMuchInfoListener(e) {
+    checkboxes.enableTooMuchInfo = e.checked
+    infoDiv = document.getElementById("tooMuchInfo")
+    if (checkboxes.enableTooMuchInfo) {
+        infoDiv.style.display = "flex"
     } else {
-        shieldsInfo.style.display = "none"
+        infoDiv.style.display = "none"
     }
+    updateMit()
 }
 
+function partyBonusListener(e) {
+    checkboxes.enableTooMuchInfo = e.checked
+    partyBonusDropdown = document.getElementById("partyBonusDropdown")
+    if (checkboxes.enableTooMuchInfo) {
+        bonus = parseInt(partyBonusDropdown.value)
+        partyBonus = 1 + ( bonus / 100)
+    } else {
+        partyBonus = 1.0
+    }
+    document.getElementById("PartyBonus").innerText = partyBonus;
+
+    updateMit()
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     for (var i = 0; i < jobs.length; i++) {
@@ -626,8 +424,14 @@ document.addEventListener("DOMContentLoaded", () => {
     updatePartyList()
     calculateDamage()
     shieldCheckbox(document.getElementById("shieldsCheckbox"))
+    partyBonusListener(document.getElementById("partyBonusCheckbox"))
+    tooMuchInfoListener(document.getElementById("tooMuchInfoCheckbox"))
     document.getElementById("mitInput").addEventListener("input", calculateDamage)
     document.getElementById("mitDropdown").addEventListener("input", calculateDamage)
     document.getElementById("shieldsCheckbox").addEventListener("input", (e) => {shieldCheckbox(e.target)});
     document.getElementById("personalsCheckbox").addEventListener("input", updatePartyList)
+    document.getElementById("tooMuchInfoCheckbox").addEventListener("input", (e) => {tooMuchInfoListener(e.target)})
+    
+    document.getElementById("partyBonusCheckbox").addEventListener("input", (e) => {partyBonusListener(e.target)})
+    document.getElementById("partyBonusDropdown").addEventListener("input", (e) => {partyBonusListener(document.getElementById("partyBonusCheckbox"))})
 });

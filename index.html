@@ -7,6 +7,7 @@
     <script src="script.js" defer></script>
     <script src="constants.js" defer></script>
     <script src="mitigations.js" defer></script>
+    <script src="partyList.js" defer></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -54,6 +55,13 @@
             width: 70px;
         }
 
+        #tooMuchInfo table {
+            border-collapse: collapse;
+        }
+        #tooMuchInfo table, td, th {
+            border: 1px solid;
+            padding: 10px;
+        }
 
     </style>
 </head>
@@ -68,6 +76,15 @@
         </select>
         <input type="checkbox" id="personalsCheckbox" onclick="updateMit()">Enable Personal Mits</input>
         <input type="checkbox" id="shieldsCheckbox" onclick="updateMit()">Enable Shields</input>
+        <input type="checkbox" id="partyBonusCheckbox">Simulate Party Bonus</input>
+        <select name="partyBonusDropdown" id="partyBonusDropdown">
+            <option value="5">5%</option>
+            <option value="4">4%</option>
+            <option value="3">3%</option>
+            <option value="2">2%</option>
+            <option value="1">1%</option>
+        </select>
+        <input type="checkbox" id="tooMuchInfoCheckbox">Too Much Info</input>
     </div>
 
     <div id="partyList">
@@ -120,6 +137,14 @@
             <input type="checkbox" id="VPR" class="jobCheckbox">
             <label for="VPR">VPR</label>
 
+            <h3>Physical Ranged</h3>
+            <input type="checkbox" id="BRD" class="jobCheckbox">
+            <label for="BRD">BRD</label>
+            <input type="checkbox" id="DNC" class="jobCheckbox">
+            <label for="DNC">DNC</label>
+            <input type="checkbox" id="MCH" class="jobCheckbox">
+            <label for="MCH">MCH</label>
+
             <h3>Caster</h3>
             <input type="checkbox" id="BLM" class="jobCheckbox">
             <label for="BLM">BLM</label>
@@ -129,14 +154,6 @@
             <label for="RDM">RDM</label>
             <input type="checkbox" id="PCT" class="jobCheckbox">
             <label for="PCT">PCT</label>   
-
-            <h3>Physical Ranged</h3>
-            <input type="checkbox" id="BRD" class="jobCheckbox">
-            <label for="BRD">BRD</label>
-            <input type="checkbox" id="DNC" class="jobCheckbox">
-            <label for="DNC">DNC</label>
-            <input type="checkbox" id="MCH" class="jobCheckbox">
-            <label for="MCH">MCH</label>
 
             <h3>Healer</h3>
             <input type="checkbox" id="WHM" class="jobCheckbox">
@@ -152,6 +169,47 @@
         <div id="mitOptions">
             
         </div>
+    </div>
+
+    <div id="tooMuchInfo">
+        <table>
+            <tr>
+                <td>f(DET)</td>
+                <td id="fDET"></td>
+            </tr>
+            <tr>
+                <td>f(WD)</td>
+                <td id="fWD"></td>
+            </tr>
+            <tr>
+                <td>f(HMP)</td>
+                <td id="fHMP"></td>
+            </tr>
+            <tr>
+                <td>f(TNC)</td>
+                <td id="fTNC"></td>
+            </tr>
+            <tr>
+                <td>f(CRT)</td>
+                <td id="fCRT"></td>
+            </tr>
+            <tr>
+                <td>H1</td>
+                <td id="H1"></td>
+            </tr>
+            <tr>
+                <td>H2</td>
+                <td id="H2"></td>
+            </tr>
+            <tr>
+                <td>HCrit</td>
+                <td id="HCrit"></td>
+            </tr>
+            <tr>
+                <td>Party Bonus</td>
+                <td id="PartyBonus"></td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>
