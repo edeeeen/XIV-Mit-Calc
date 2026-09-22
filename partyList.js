@@ -1,3 +1,27 @@
+var health = {
+    "WAR" : 0, 
+    "PLD" : 0, 
+    "GNB" : 0, 
+    "DRK" : 0,
+    "WHM" : 0, 
+    "AST" : 0, 
+    "SCH" : 0,  
+    "SGE" : 0,
+    "MNK" : 0, 
+    "DRG" : 0, 
+    "NIN" : 0, 
+    "SAM" : 0, 
+    "RPR" : 0, 
+    "VPR" : 0,
+    "BRD" : 0, 
+    "MCH" : 0, 
+    "DNC" : 0,
+    "BLM" : 0, 
+    "SMN" : 0, 
+    "RDM" : 0, 
+    "PCT" : 0
+}
+
 function updatePartyList() {
     let partylist = document.getElementById("partyList");
 
@@ -207,6 +231,7 @@ function vitalityListener(event, job, lvl = 100) {
         let vitValue = event.target.value;
         healthElement.innerText = healthCalculation(vitValue, job);
     }
+    updateMit()
 }
 
 // calculate health from vitality
@@ -228,9 +253,13 @@ function healthCalculation(vitality, job, lvl = 100) {
 
     const bonusHP = Math.floor((vitality - baseMain) * vitScalar);
 
-    if(jobBaseHP + bonusHP < 0) {
-        return jobBaseHP
+    // this might not actually work
+    if(jobBaseHP + bonusHP < jobBaseHP) {
+        health[job] = jobBaseHP;
+        return jobBaseHP;
     }
+
+    health[job] = jobBaseHP + bonusHP;
 
     return jobBaseHP + bonusHP;
 }

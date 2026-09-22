@@ -54,6 +54,10 @@ function addMit() {
             if (!mit.shield.jobs) mit.shield.jobs = mit.jobs; 
             shields.push(mit.shield); 
         }
+
+        if (mit.mitType === MitType.PERCENTSHIELDPERSONAL || mit.mitType === MitType.PERCENTSHIELDPARTY) {
+            shields.push(mit);
+        }
     });
 
 
@@ -75,12 +79,23 @@ function addMit() {
             if(mit.potency > 0) {
                 // if its based off of potency
                 healingValue = getShieldValue(mit);
-                actualShield = Object.fromEntries(
+                let actualShield = Object.fromEntries(
                     Object.entries(healingValue).map(([key, value]) => [key, Math.round(value * mit.multiplier)])
                 );
                 allShields.push(actualShield);
             } else {
                 // if its based off of percent
+                shieldSize = Math.round(health[mit.jobs[0]] * mit.percentShield);
+                console.log(shieldSize)
+                let actualShield = {
+                    HHigh: shieldSize,
+                    H: shieldSize,
+                    HLow: shieldSize,
+                    HCritHigh: shieldSize,
+                    HCrit: shieldSize,
+                    HCritLow: shieldSize
+                };
+                allShields.push(actualShield);
             }
             
 
@@ -128,6 +143,25 @@ function addMit() {
     document.getElementById("baseDamage").innerText = baseString;
     document.getElementById("minDamage").innerText = minString;
     document.getElementById("totalMitPercent").innerText = (Math.round((1 - totalMit) * 10000)/100) + "%";
+}
+
+function checkVitInput(checkbox, jobId) {
+    let shieldsEnabled = document.getElementById("shieldsCheckbox").checked;
+    
+    if (!shieldsEnabled) {
+        checkbox.disabled = false;
+        return;
+    }
+    let vitalityInput = document.getElementById(jobId + "Vitality");
+    console.log("PENIS " + Boolean(vitalityInput && vitalityInput.value.trim() !== ''))
+    if(vitalityInput && vitalityInput.value.trim() !== '') {
+        checkbox.disabled = false; 
+    } else {
+        checkbox.disabled = true;
+        checkbox.checked = false;
+        addMit();
+    }
+
 }
 
 function checkStatsInput(checkbox, jobId) {
@@ -202,10 +236,12 @@ function updateMit(element) {
         if(!personalsEnabled && (mitOptions.find(m => m.name === mit).mitType === MitType.PERSONAL)) {
             return; // Skip personal mits if checkbox is not checked
         }
-        if(!shieldsEnabled && mitOptions.find(m => m.name === mit).mitType === MitType.PARTYSHIELD) {
+        if(!shieldsEnabled && (mitOptions.find(m => m.name === mit).mitType === MitType.PARTYSHIELD
+        || mitOptions.find(m => m.name === mit).mitType === MitType.PERCENTSHIELDPARTY)) {
             return
         }
-        if((!personalsEnabled || !shieldsEnabled) && (mitOptions.find(m => m.name === mit).mitType === MitType.PERSONALSHIELD)) {
+        if((!personalsEnabled || !shieldsEnabled) && (mitOptions.find(m => m.name === mit).mitType === MitType.PERSONALSHIELD 
+        || mitOptions.find(m => m.name === mit).mitType === MitType.PERCENTSHIELDPERSONAL)) {
             return; 
         }
 
@@ -235,7 +271,7 @@ function updateMit(element) {
                   (mitObject.shield && (mitObject.shield.mitType === MitType.PERSONALSHIELD || mitObject.shield.mitType === MitType.PARTYSHIELD));
 
 
-        if (hasShield && rawShield.jobs && rawShield.jobs.length === 1) {
+        if (hasShield && rawShield.jobs && rawShield.jobs.length === 1 && hasShield) {
             let jobId = rawShield.jobs[0];
 
             // Disable by default until stats are validated
@@ -262,6 +298,26 @@ function updateMit(element) {
             checkStatsInput(checkbox, jobId, mitObject);
         }
 
+        // checkboxes for percent shields
+        // requires vit to be filled out
+        const hasPercentShield = mitObject.mitType === MitType.PERCENTSHIELDPERSONAL || 
+                mitObject.mitType === MitType.PERCENTSHIELDPARTY || 
+                (mitObject.shield && (mitObject.shield.mitType === MitType.PERCENTSHIELDPERSONAL || mitObject.shield.mitType === MitType.PERCENTSHIELDPARTY));
+        
+        if(hasPercentShield) {
+            let jobId = rawShield.jobs[0];
+            checkbox.disabled = true;
+            let vitalityInput = document.getElementById(jobId + "Vitality");
+
+            if(vitalityInput) {
+                vitalityInput.addEventListener('input', () => checkVitInput(checkbox, jobId));
+            }
+
+            checkVitInput(checkbox, jobId);
+        }
+        
+
+
         var label = document.createElement("label");
         label.htmlFor = mit;
         label.appendChild(checkbox);
@@ -270,22 +326,6 @@ function updateMit(element) {
     });
 
     addMit();
-}
-
-function getShieldValue(mit) {
-    job = mit.jobs[0];
-    console.log(job)
-    potency = mit.potency;
-    mainStatVal = parseInt(document.getElementById(job+"mainStatInput").value);
-    det = parseInt(document.getElementById(job+"detInput").value);
-    tnc = 400
-    let tanks = ["WAR", "PLD", "DRK", "GNB"]
-    if(tanks.includes(job)) { 
-        tnc = parseInt(document.getElementById(job+"TNCInput").value);
-    }
-    crt = parseInt(document.getElementById(job+"CRTInput").value);
-    wd  = parseInt(document.getElementById(job+"weaponDamageInput").value);
-    return calculateShields(potency, mainStatVal, det, tnc, crt, wd, job)
 }
 
 function getJobAttributeModifier(stat, job) {
@@ -301,10 +341,30 @@ function getJobAttributeModifier(stat, job) {
     }
 }
 
+function getShieldValue(mit) {
+    job = mit.jobs[0];
+    console.log(job)
+    potency = mit.potency;
+    mainStatVal = parseInt(document.getElementById(job+"mainStatInput").value);
+    det = parseInt(document.getElementById(job+"detInput").value);
+    tnc = 400
+    let tanks = ["WAR", "PLD", "DRK", "GNB"]
+    if(tanks.includes(job)) { 
+        tnc = parseInt(document.getElementById(job+"TNCInput").value);
+    }
+    crt = parseInt(document.getElementById(job+"CRTInput").value);
+    wd  = parseInt(document.getElementById(job+"weaponDamageInput").value);
+    return calculateShields(potency, mainStatVal, det, tnc, crt, wd, job, mit.pet)
+}
+
 // https://docs.google.com/spreadsheets/d/1YAuklyu4IJCFUdk1KERmCP0F_SRkhJpSRvU0hazStj0/edit?gid=2139215610#gid=2139215610
 // Caro is the goat
-function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", lvl = 100) {
-    main = main * partyBonus // add party bonus 1.0-1.05
+function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", pet = false, lvl = 100) {
+    // pets aren't affected by party bonus
+    if (!pet) {
+        main = main * partyBonus // add party bonus 1.0-1.05
+    }
+    
     
     let fDET = Math.floor(140 * (det - stats.main(lvl)) / stats.div(lvl) + 1000);
     const tanks = ["PLD", "DRK", "WAR", "GNB"]

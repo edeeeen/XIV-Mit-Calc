@@ -29,13 +29,15 @@ class shield {
     jobs;
     mitType;
     pet; // exists because pets actions aren't affected by party bonus, this literally only affects consolation
-    constructor(name, potency, multiplier, jobs, mitType, pet = false){
+    percentShield;
+    constructor(name, potency, multiplier, jobs, mitType, pet = false, percentShield = 0.0){
         this.name = name;
         this.potency = potency;
         this.jobs = jobs;
         this.multiplier = multiplier;
         this.mitType = mitType;
         this.pet = pet;
+        this.percentShield = percentShield
     }
 }
 
@@ -57,6 +59,8 @@ mitOptions.push(new percentMit("Heart of Corundum", 0.2775, 0.2775, ["GNB"], Mit
 mitOptions.push(new percentMit("Dark Missionary", 0.05, 0.10, ["DRK"], MitType.PARTY));
 mitOptions.push(new percentMit("Dark Mind", 0.10, 0.20, ["DRK"], MitType.PERSONAL));
 mitOptions.push(new percentMit("Shadowed Vigil", 0.40, 0.40, ["DRK"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Oblation", 0.10, 0.10, ["DRK"], MitType.PERSONAL));
+mitOptions.push(new shield("The Blackest Night", 0, 1, ["DRK"], MitType.PERCENTSHIELDPERSONAL, false, 0.25))
 
 //TODO: Add tbn
 
@@ -68,7 +72,7 @@ mitOptions.push(new percentMit("Guardian", 0.40, 0.40, ["PLD"], MitType.PERSONAL
 mitOptions.push(new percentMit("Bulwark", 0.20, 0.20, ["PLD"], MitType.PERSONAL)); // not super accurate, might not matter. need to check if blocking is multiplicative
 mitOptions.push(new percentMit("Holy Sheltron", 0.2775, 0.2775, ["PLD"], MitType.PERSONAL));
 mitOptions.push(new percentMit("Intervention", 0, 0, ["PLD"], MitType.PERSONAL)); // does variable mitigation based on rampart and guardian
-// TODO: Add divine veil
+mitOptions.push(new shield("Divine Veil", 0, 1, ["PLD"], MitType.PERCENTSHIELDPARTY, false, 0.10))
 
 // WAR
 mitOptions.push(new percentMit("Damnation", 0.40, 0.40, ["WAR"], MitType.PERSONAL));
@@ -85,13 +89,18 @@ mitOptions.push(new percentMit("Nascent Flash", 0.19, 0.19, ["WAR"], MitType.PER
 
 // Melee
 mitOptions.push(new percentMit("Feint", 0.10, 0.05, ["MNK", "DRG", "NIN", "SAM", "RPR"], MitType.PARTY));
-mitOptions.push(new percentMit("Shade Shift", 0.20, 0.20, ["NIN"], MitType.PERSONAL));
+mitOptions.push(new shield("Shade Shift", 0, 1, ["NIN"], MitType.PERCENTSHIELDPERSONAL, false, 0.20));
 mitOptions.push(new percentMit("Riddle of Earth", 0.20, 0.20, ["MNK"], MitType.PERSONAL));
 mitOptions.push(new percentMit("Tengentsu", 0.10, 0.10, ["SAM"], MitType.PERSONAL));
+mitOptions.push(new shield("Shade Shift", 0, 1, ["NIN"], MitType.PERCENTSHIELDPERSONAL, false, 0.10));
 
 // Caster
 mitOptions.push(new percentMit("Addle", 0.05, 0.10, ["BLM", "SMN", "RDM", "PCT"], MitType.PARTY));
 mitOptions.push(new percentMit("Magick Barrier", 0.0, 0.10, ["RDM"], MitType.PARTY)); // TODO: Add healing buff
+mitOptions.push(new shield("Radiant Aegis", 0, 1, ["SMN"], MitType.PERCENTSHIELDPERSONAL, 0.20))
+mitOptions.push(new shield("Manaward", 0, 1, ["BLM"], MitType.PERCENTSHIELDPERSONAL, 0.30))
+mitOptions.push(new shield("Tempera Coat", 0, 1, ["PCT"], MitType.PERCENTSHIELDPERSONAL, 0.20))
+mitOptions.push(new shield("Tempera Grassa", 0, 1, ["PCT"], MitType.PERCENTSHIELDPERSONAL, 0.10))
 // TODO: Add tempura grassa
 
 // Pranged

@@ -32,7 +32,9 @@ const MitType = Object.freeze({
     PARTY: 0,
     PERSONAL: 1,
     PERSONALSHIELD: 2,
-    PARTYSHIELD: 3
+    PARTYSHIELD: 3,
+    PERCENTSHIELDPARTY: 4,
+    PERCENTSHIELDPERSONAL: 5
 });
 
 const mainStat = {
