@@ -107,6 +107,15 @@ function addMit() {
         document.getElementById("tempShieldCritHigh").innerText = allShields.map(item => item.HCritHigh).join(" + ") + " = " + allShields.reduce((sum, item) => sum + item.HCritHigh, 0);
         document.getElementById("tempShieldCritMid").innerText = allShields.map(item => item.HCrit).join(" + ") + " = " + allShields.reduce((sum, item) => sum + item.HCrit, 0);
         document.getElementById("tempShieldCritLow").innerText = allShields.map(item => item.HCritLow).join(" + ") + " = " + allShields.reduce((sum, item) => sum + item.HCritLow, 0);
+    } else { 
+        document.getElementById("tempShieldHigh").innerText = "0";
+        document.getElementById("tempShieldMid").innerText = "0";
+        document.getElementById("tempShieldLow").innerText = "0";
+
+        document.getElementById("tempShieldCritHigh").innerText = "0";
+        document.getElementById("tempShieldCritMid").innerText = "0";
+        document.getElementById("tempShieldCritLow").innerText = "0";
+
     }
     
     // ======== NORMAL MITS ==============
@@ -153,13 +162,14 @@ function checkVitInput(checkbox, jobId) {
         return;
     }
     let vitalityInput = document.getElementById(jobId + "Vitality");
-    console.log("PENIS " + Boolean(vitalityInput && vitalityInput.value.trim() !== ''))
     if(vitalityInput && vitalityInput.value.trim() !== '') {
         checkbox.disabled = false; 
     } else {
         checkbox.disabled = true;
-        checkbox.checked = false;
-        addMit();
+        if (checkbox.checked) {
+            checkbox.checked = false;
+            addMit();
+        }
     }
 
 }
