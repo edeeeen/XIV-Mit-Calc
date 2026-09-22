@@ -34,7 +34,11 @@ const MitType = Object.freeze({
     PERSONALSHIELD: 2,
     PARTYSHIELD: 3,
     PERCENTSHIELDPARTY: 4,
-    PERCENTSHIELDPERSONAL: 5
+    PERCENTSHIELDPERSONAL: 5,
+
+    PERCENTTARGETED: 6,
+    SINGLETARGET: 7,
+    SHIELDTARGETED: 8
 });
 
 const mainStat = {
@@ -231,56 +235,18 @@ const stats = {
 
 
 const jobModifiers = {
-    //      HP	MP	STR	VIT	DEX	INT	MND
-    // GLA	110	49	95	100	90	50	95
-    // PGL	105	34	100	95	100	45	85
-    // MRD	115	28	100	100	90	30	50
-    // LNC	110	39	105	100	95	40	60
-    // ARC	100	69	85	95	105	80	75
-    // CNJ	100	117	50	95	100	100	105
-    // THM	100	123	40	95	95	105	70
-    // PLD	120	59	100	110	95	60	100
-    // MNK	110	43	110	100	105	50	90
-    // WAR	125	38	105	110	95	40	55
-    // DRG	115	49	115	105	100	45	65
-    // BRD	105	79	90	100	115	85	80
-    // WHM	105	124	55	100	105	105	115
-    // BLM	105	129	45	100	100	115	75
-    // ACN	100	110	85	95	95	105	75
-    // SMN	105	111	90	100	100	115	80
-    // SCH	105	119	90	100	100	105	115
-    // ROG	103	38	80	95	100	60	70
-    // NIN	108	48	85	100	110	65	75
-    // MCH	105	79	85	100	115	80	85
-    // DRK	120	79	105	110	95	60	40
-    // AST	105	124	50	100	100	105	115
-    // SAM	109	40	112	100	108	60	50
-    // RDM	105	120	55	100	105	115	110
-    // BLU	105	120	70	100	110	115	105
-    // GNB	120	59	100	110	95	60	100
-    // DNC	105	79	90	100	115	85	80
-    // VPR  111	100	100	100	110	45	55
-    // PCT  105	100	50	100	110	115	80
-    // Bunshin					100		
-    // Living Shadow	100		100				
-    // Automaton	100				100		
-    // Garuda	90						
-    // Demi-Summons	90						
-    // Titan	150						
-    // Fairies	100		
-        
     HP: (job) => {
         switch(job) {
-            case "GLA": return 110;
+            case "GLA": return 130;
             case "PGL": return 105;
-            case "MRD": return 115;
+            case "MRD": return 135;
             case "LNC": return 110;
             case "ARC": return 100;
             case "CNJ": return 100;
             case "THM": return 100;
-            case "PLD": return 120;
+            case "PLD": return 140;
             case "MNK": return 110;
-            case "WAR": return 125;
+            case "WAR": return 145;
             case "DRG": return 115;
             case "BRD": return 105;
             case "WHM": return 105;
@@ -291,13 +257,15 @@ const jobModifiers = {
             case "ROG": return 103;
             case "NIN": return 108;
             case "MCH": return 105;
-            case "DRK": return 120;
+            case "DRK": return 140;
             case "AST": return 105;
             case "SAM": return 109;
             case "RDM": return 105;
             case "BLU": return 105;
-            case "GNB": return 120;
+            case "GNB": return 140; // allagan studies is wrong abt this i think, seems to be same as pld
             case "DNC": return 105;
+            case "RPR": return 115;
+            case "SGE": return 105;
             case "VPR": return 111;
             case "PCT": return 105;
             default: return 100;
@@ -339,6 +307,8 @@ const jobModifiers = {
             case "BLU": return 70;
             case "GNB": return 100;
             case "DNC": return 90;
+            case "RPR": return 115;
+            case "SGE": return 60;
             case "VPR": return 100;
             case "PCT": return 50;
             case "Living Shadow": return 100;
@@ -380,6 +350,8 @@ const jobModifiers = {
             case "BLU": return 100;
             case "GNB": return 110;
             case "DNC": return 100;
+            case "RPR": return 105;
+            case "SGE": return 100;
             case "VPR": return 100;
             case "PCT": return 100;
             default: return 100;
@@ -415,6 +387,8 @@ const jobModifiers = {
             case "BLU": return 110;
             case "GNB": return 95;
             case "DNC": return 115;
+            case "RPR": return 100;
+            case "SGE": return 100;
             case "VPR": return 110;
             case "PCT": return 110;
             case "Bunshin": return 100;
@@ -452,8 +426,10 @@ const jobModifiers = {
             case "BLU": return 115;
             case "GNB": return 60;
             case "DNC": return 85;
-            case "VPR": 45;
-            case "PCT": 115;
+            case "RPR": return 80;
+            case "SGE": return 115;
+            case "VPR": return 45;
+            case "PCT": return 115;
             case "Automaton": return 100;
             default: return 100;
         }
@@ -488,10 +464,11 @@ const jobModifiers = {
             case "BLU": return 105;
             case "GNB": return 100;
             case "DNC": return 80;
+            case "RPR": return 40;
+            case "SGE": return 115;
             case "VPR": return 55;
             case "PCT": return 80;
             default: return 100;
         }
     }
-}
-
+};

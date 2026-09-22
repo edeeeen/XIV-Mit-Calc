@@ -271,9 +271,6 @@ function updateMit(element) {
         
         // can be less jank if i fix this whole function
 
-
-        
-
         let mitObject = mitOptions.find(m => m.name === mit);
         let rawShield = mitObject.shield ? mitObject.shield : mitObject;
         const hasShield = mitObject.mitType === MitType.PERSONALSHIELD || 
