@@ -1,6 +1,5 @@
 var jobs = document.getElementsByClassName("jobCheckbox");
 var mitOptions = []
-var damageType = "Physical";
 
 var max = 0
 var min = 0
