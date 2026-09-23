@@ -8,6 +8,12 @@ var base = 0
 
 const hasPotencyShields = ["SGE", "SCH", "AST", "WHM"]
 const hasSingleTargetPotencyShields = ["WAR", "PLD"]
+const appState = {
+    selectedMits: new Map(), // Stores mitName -> mitObject
+    damageType: "physical",  // "physical" | "magic"
+    baseDamage: 10000,
+    partyBonus: 1.0
+};
 
 var checkboxes = {
     enablePersonalMits: false,
@@ -17,27 +23,20 @@ var checkboxes = {
     simulatePartyBonus: false
 }
 
-var partyBonus = 1.0
+
 
 
 function addMit() {
     updatePartyList();
-    var selectedMits = new Set();
-    // update list of selected mits
-    var mits = document.getElementsByClassName("mitOption");
-    for (var i = 0; i < mits.length; i++) {
-        if (mits[i].checked ) {
-            selectedMits.add(mits[i].value);
-        }
-    }
-    // Get mitigation objects for selected mits
-    var selectedMitObjects = mitOptions.filter(mit => selectedMits.has(mit.name));
+
+    const selectedMitObjects = Array.from(appState.selectedMits.values());
 
     // split up shield and normal mits
     var shields = [];
     var normalMits = [];
 
     selectedMitObjects.forEach(mit => {
+        
         // If it has percentage mitigation, treat it as a normal mit
         if (mit.physicalMit > 0 || mit.magicMit > 0) {
             normalMits.push(mit);
@@ -74,32 +73,23 @@ function addMit() {
     });
     potency = 0;
     let allShields = []
-    if(shields.length > 0 ) {
-        shields.forEach( mit => {
-            if(mit.potency > 0) {
-                // if its based off of potency
-                healingValue = getShieldValue(mit);
+    if (shields.length > 0) {
+        shields.forEach(mit => {
+            if (mit.potency > 0) {
+                let healingValue = getShieldValue(mit);
                 let actualShield = Object.fromEntries(
-                    Object.entries(healingValue).map(([key, value]) => [key, Math.round(value * mit.multiplier)])
+                    Object.entries(healingValue).map(([key, value]) => [key, Math.round(value * (mit.multiplier || 1))])
                 );
                 allShields.push(actualShield);
             } else {
-                // if its based off of percent
-                shieldSize = Math.round(health[mit.jobs[0]] * mit.percentShield);
-                console.log(shieldSize)
-                let actualShield = {
-                    HHigh: shieldSize,
-                    H: shieldSize,
-                    HLow: shieldSize,
-                    HCritHigh: shieldSize,
-                    HCrit: shieldSize,
-                    HCritLow: shieldSize
-                };
-                allShields.push(actualShield);
+                let shieldSize = Math.round(health[mit.jobs[0]] * mit.percentShield);
+                allShields.push({
+                    HHigh: shieldSize, H: shieldSize, HLow: shieldSize,
+                    HCritHigh: shieldSize, HCrit: shieldSize, HCritLow: shieldSize
+                });
             }
+        });
             
-
-        })
         document.getElementById("tempShieldHigh").innerText = allShields.map(item => item.HHigh).join(" + ") + " = " + allShields.reduce((sum, item) => sum + item.HHigh, 0);
         document.getElementById("tempShieldMid").innerText = allShields.map(item => item.H).join(" + ") + " = " + allShields.reduce((sum, item) => sum + item.H, 0);
         document.getElementById("tempShieldLow").innerText = allShields.map(item => item.HLow).join(" + ") + " = " + allShields.reduce((sum, item) => sum + item.HLow, 0);
@@ -108,75 +98,56 @@ function addMit() {
         document.getElementById("tempShieldCritMid").innerText = allShields.map(item => item.HCrit).join(" + ") + " = " + allShields.reduce((sum, item) => sum + item.HCrit, 0);
         document.getElementById("tempShieldCritLow").innerText = allShields.map(item => item.HCritLow).join(" + ") + " = " + allShields.reduce((sum, item) => sum + item.HCritLow, 0);
     } else { 
-        document.getElementById("tempShieldHigh").innerText = "0";
-        document.getElementById("tempShieldMid").innerText = "0";
-        document.getElementById("tempShieldLow").innerText = "0";
-
-        document.getElementById("tempShieldCritHigh").innerText = "0";
-        document.getElementById("tempShieldCritMid").innerText = "0";
-        document.getElementById("tempShieldCritLow").innerText = "0";
+        ["tempShieldHigh", "tempShieldMid", "tempShieldLow", "tempShieldCritHigh", "tempShieldCritMid", "tempShieldCritLow"].forEach(id => {
+            document.getElementById(id).innerText = "0";
+        });
 
     }
     
     // ======== NORMAL MITS ==============
     // update max
-    maxString = ""
-    if (normalMits.length > 0) {
-        maxString = max + " * " + normalMits.map(mit => damageType === "physical" ? mit.physicalMit : mit.magicMit).join(" * ") + " = " 
-        maxString += (max * normalMits.reduce((acc, mit) => acc * (1 - (damageType === "physical" ? mit.physicalMit : mit.magicMit)), 1)).toFixed(2);
-    } else {
-        maxString = max;
-    }
-    // update base
-    baseString = ""
-    if (normalMits.length > 0) {
-        baseString = base + " * " + normalMits.map(mit => damageType === "physical" ? mit.physicalMit : mit.magicMit).join(" * ") + " = "
-        baseString += (base * normalMits.reduce((acc, mit) => acc * (1 - (damageType === "physical" ? mit.physicalMit : mit.magicMit)), 1)).toFixed(2);
+    
+    const currentDamageType = appState.damageType;
+    const calculateMitFactor = (mit) => 1 - (currentDamageType === "physical" ? mit.physicalMit : mit.magicMit);
 
-    } else {
-        baseString = base;
-    }
-    // update min
-    minString = ""
+    const totalMitFactor = normalMits.reduce((acc, mit) => acc * calculateMitFactor(mit), 1);
+
     if (normalMits.length > 0) {
-        minString = min + " * " + normalMits.map(mit => damageType === "physical" ? mit.physicalMit : mit.magicMit).join(" * ") + " = "
-        minString += (min * normalMits.reduce((acc, mit) => acc * (1 - (damageType === "physical" ? mit.physicalMit : mit.magicMit)), 1)).toFixed(2);
+        const mitListStr = normalMits.map(mit => currentDamageType === "physical" ? mit.physicalMit : mit.magicMit).join(" * ");
+        document.getElementById("maxDamage").innerText = `${max} * ${mitListStr} = ${(max * totalMitFactor).toFixed(2)}`;
+        document.getElementById("baseDamage").innerText = `${base} * ${mitListStr} = ${(base * totalMitFactor).toFixed(2)}`;
+        document.getElementById("minDamage").innerText = `${min} * ${mitListStr} = ${(min * totalMitFactor).toFixed(2)}`;
     } else {
-        minString = min;
+        document.getElementById("maxDamage").innerText = max;
+        document.getElementById("baseDamage").innerText = base;
+        document.getElementById("minDamage").innerText = min;
     }
 
-    // update total mit
-    totalMit = (normalMits.reduce((acc, mit) => acc * (1 - (damageType === "physical" ? mit.physicalMit : mit.magicMit)), 1)).toFixed(4);
-
-    document.getElementById("maxDamage").innerText = maxString;
-    document.getElementById("baseDamage").innerText = baseString;
-    document.getElementById("minDamage").innerText = minString;
-    document.getElementById("totalMitPercent").innerText = (Math.round((1 - totalMit) * 10000)/100) + "%";
+    totalPercentMit = Math.round((1 - totalMitFactor) * 10000) / 100;
+    document.getElementById("totalMitPercent").innerText = totalPercentMit + "%";
 }
 
 function checkVitInput(checkbox, jobId) {
     let shieldsEnabled = document.getElementById("shieldsCheckbox").checked;
-    
     if (!shieldsEnabled) {
         checkbox.disabled = false;
         return;
     }
     let vitalityInput = document.getElementById(jobId + "Vitality");
-    if(vitalityInput && vitalityInput.value.trim() !== '') {
+    if (vitalityInput && vitalityInput.value.trim() !== '') {
         checkbox.disabled = false; 
     } else {
         checkbox.disabled = true;
         if (checkbox.checked) {
             checkbox.checked = false;
+            appState.selectedMits.delete(checkbox.value);
             addMit();
         }
     }
-
 }
 
 function checkStatsInput(checkbox, jobId) {
     let shieldsEnabled = document.getElementById("shieldsCheckbox").checked;
-    
     if (!shieldsEnabled) {
         checkbox.disabled = false;
         return;
@@ -191,28 +162,27 @@ function checkStatsInput(checkbox, jobId) {
     const tanks = ["WAR", "PLD", "DRK", "GNB"];
     let isTank = tanks.includes(jobId);
 
-    // Basic stats required for all jobs
-    let hasBasicStats = mainStatInput && mainStatInput.value.trim() !== '' &&
-                        detInput && detInput.value.trim() !== '' &&
-                        CRTInput && CRTInput.value.trim() !== '' &&
-                        weaponDamageInput && weaponDamageInput.value.trim() !== '';
-
-    // Tank requires TNC as well
-    let hasTankStat = !isTank || (TNCInput && TNCInput.value.trim() !== '');
+    let hasBasicStats = mainStatInput?.value.trim() && detInput?.value.trim() && CRTInput?.value.trim() && weaponDamageInput?.value.trim();
+    let hasTankStat = !isTank || TNCInput?.value.trim();
 
     if (hasBasicStats && hasTankStat) {
         checkbox.disabled = false; 
     } else {
         checkbox.disabled = true;
-        checkbox.checked = false;
-        addMit();
+        if (checkbox.checked) {
+            checkbox.checked = false;
+            appState.selectedMits.delete(checkbox.value);
+            addMit();
+        }
     }
 }
 
 
 // creates mit list
-function updateMit(element) {
+function updateMit() {
     var availableMits = new Set();
+
+    // get active jobs
     for (var j = 0; j < jobs.length; j++) {
         if (jobs[j].checked) {
             for (var m = 0; m < mitOptions.length; m++) {
@@ -224,13 +194,12 @@ function updateMit(element) {
     }
 
     // Get currently selected mits before clearing
-    var mits = document.getElementsByClassName("mitOption");
-    var personalsEnabled = document.getElementById("personalsCheckbox").checked;
-    var shieldsEnabled = document.getElementById("shieldsCheckbox").checked;
-    var previouslySelected = new Set();
-    for (var i = 0; i < mits.length; i++) {
-        if (mits[i].checked) {
-            previouslySelected.add(mits[i].value);
+    var personalsEnabled = checkboxes.enablePersonalMits;
+    var shieldsEnabled = checkboxes.enableShields;
+
+    for (let [mitName] of appState.selectedMits) {
+        if (!availableMits.has(mitName)) {
+            appState.selectedMits.delete(mitName);
         }
     }
 
@@ -241,75 +210,65 @@ function updateMit(element) {
     title = document.createElement("h2");
     title.innerText = "Available Mits:";
     mitContainer.appendChild(title);
-    availableMits.forEach(mit => {
-        // check if user wants to display personals
-        if(!personalsEnabled && (mitOptions.find(m => m.name === mit).mitType === MitType.PERSONAL)) {
-            return; // Skip personal mits if checkbox is not checked
-        }
-        if(!shieldsEnabled && (mitOptions.find(m => m.name === mit).mitType === MitType.PARTYSHIELD
-        || mitOptions.find(m => m.name === mit).mitType === MitType.PERCENTSHIELDPARTY)) {
-            return
-        }
-        if((!personalsEnabled || !shieldsEnabled) && (mitOptions.find(m => m.name === mit).mitType === MitType.PERSONALSHIELD 
-        || mitOptions.find(m => m.name === mit).mitType === MitType.PERCENTSHIELDPERSONAL)) {
-            return; 
-        }
 
+    availableMits.forEach(mitName => {
+        let mitObject = mitOptions.find(m => m.name === mitName);
+        if (!mitObject) return;
+        
+
+        // Filter from checkboxes
+        if (!personalsEnabled && mitObject.mitType === MitType.PERSONAL) return;
+        if (!shieldsEnabled && (mitObject.mitType === MitType.PARTYSHIELD || mitObject.mitType === MitType.PERCENTSHIELDPARTY)) return;
+        if ((!personalsEnabled || !shieldsEnabled) && (mitObject.mitType === MitType.PERSONALSHIELD || mitObject.mitType === MitType.PERCENTSHIELDPERSONAL)) return;
+
+        // create mit name text
         var label = document.createElement("label");
-        label.className = mit.replace(/\s+/g, '');
+        label.className = mitName.replace(/\s+/g, '');
+
+        // create checkbox
         var checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        checkbox.id = mit.replace(/\s+/g, '');
-        checkbox.value = mit;
+        checkbox.id = mitName.replace(/\s+/g, '');
+        checkbox.value = mitName;
         checkbox.className = "mitOption";
-        // Preserve checked state if mit was previously selected
-        if (previouslySelected.has(mit)) {
-            checkbox.checked = true;
-        }
-        // Add event listener to update the damage calculation when a mit option is checked or unchecked
-        checkbox.addEventListener("change", addMit);
-        
-        // can be less jank if i fix this whole function
 
-        let mitObject = mitOptions.find(m => m.name === mit);
+        // Sync with appState
+        checkbox.checked = appState.selectedMits.has(mitName);
+        
+        // update state map on click
+        checkbox.addEventListener("change", (e) => {
+            if (e.target.checked) {
+                appState.selectedMits.set(mitName, mitObject);
+            } else {
+                appState.selectedMits.delete(mitName);
+            }
+            addMit();
+        });
+
         let rawShield = mitObject.shield ? mitObject.shield : mitObject;
         const hasShield = mitObject.mitType === MitType.PERSONALSHIELD || 
-                  mitObject.mitType === MitType.PARTYSHIELD || 
-                  (mitObject.shield && (mitObject.shield.mitType === MitType.PERSONALSHIELD || mitObject.shield.mitType === MitType.PARTYSHIELD));
+                          mitObject.mitType === MitType.PARTYSHIELD || 
+                          (mitObject.shield && (mitObject.shield.mitType === MitType.PERSONALSHIELD || mitObject.shield.mitType === MitType.PARTYSHIELD));
 
-
-        if (hasShield && rawShield.jobs && rawShield.jobs.length === 1 && hasShield) {
+        // grey out checkbox if stats not filled in
+        if (hasShield && rawShield.jobs && rawShield.jobs.length === 1) {
             let jobId = rawShield.jobs[0];
-
-            // Disable by default until stats are validated
             checkbox.disabled = true;
 
-            let mainStatInput = document.getElementById(jobId + "mainStatInput");
-            let detInput = document.getElementById(jobId + "detInput");
-            let CRTInput = document.getElementById(jobId + "CRTInput");
-            let weaponDamageInput = document.getElementById(jobId + "weaponDamageInput");
+            const inputs = ["mainStatInput", "detInput", "CRTInput", "weaponDamageInput", "TNCInput"];
+            inputs.forEach(inputName => {
+                let el = document.getElementById(jobId + inputName);
+                if (el) el.addEventListener('input', () => checkStatsInput(checkbox, jobId));
+            });
 
-            if (mainStatInput && detInput && CRTInput && weaponDamageInput) {
-                mainStatInput.addEventListener('input', () => checkStatsInput(checkbox, jobId, mitObject));
-                detInput.addEventListener('input', () => checkStatsInput(checkbox, jobId, mitObject));
-                CRTInput.addEventListener('input', () => checkStatsInput(checkbox, jobId, mitObject));
-                weaponDamageInput.addEventListener('input', () => checkStatsInput(checkbox, jobId, mitObject));
-            }
-
-            let TNCInput = document.getElementById(jobId + "TNCInput");
-            if (TNCInput) {
-                TNCInput.addEventListener('input', () => checkStatsInput(checkbox, jobId, mitObject));
-            }
-
-            // Run check immediately to set correct disabled state
-            checkStatsInput(checkbox, jobId, mitObject);
+            checkStatsInput(checkbox, jobId);
         }
 
         // checkboxes for percent shields
         // requires vit to be filled out
         const hasPercentShield = mitObject.mitType === MitType.PERCENTSHIELDPERSONAL || 
-                mitObject.mitType === MitType.PERCENTSHIELDPARTY || 
-                (mitObject.shield && (mitObject.shield.mitType === MitType.PERCENTSHIELDPERSONAL || mitObject.shield.mitType === MitType.PERCENTSHIELDPARTY));
+                                 mitObject.mitType === MitType.PERCENTSHIELDPARTY || 
+                                 (mitObject.shield && (mitObject.shield.mitType === MitType.PERCENTSHIELDPERSONAL || mitObject.shield.mitType === MitType.PERCENTSHIELDPARTY));
         
         if(hasPercentShield) {
             let jobId = rawShield.jobs[0];
@@ -325,10 +284,8 @@ function updateMit(element) {
         
 
 
-        var label = document.createElement("label");
-        label.htmlFor = mit;
         label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(mit));
+        label.appendChild(document.createTextNode(mitName));
         mitContainer.appendChild(label);
     });
 
@@ -369,7 +326,7 @@ function getShieldValue(mit) {
 function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", pet = false, lvl = 100) {
     // pets aren't affected by party bonus
     if (!pet) {
-        main = main * partyBonus // add party bonus 1.0-1.05
+        main = main * appState.partyBonus // add party bonus 1.0-1.05
     }
     
     
@@ -425,35 +382,12 @@ function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", pet = 
     };
 }
 
-function tempShieldsTest() {
-    var potency = document.getElementById("potencyInput").value;
-    var main = document.getElementById("mainInput").value;
-    var det = document.getElementById("detInput").value;
-    var tnc = document.getElementById("tncInput").value;
-    var crit = document.getElementById("critInput").value;
-    var wd = document.getElementById("wdInput").value;
-    
-
-    var shields = calculateShields(potency, main, det, tnc, crit, wd);
-
-    document.getElementById("tempShieldHigh").innerText = shields.HHigh;
-    document.getElementById("tempShieldLow").innerText = shields.HLow;
-    document.getElementById("tempShieldMid").innerText = shields.H;
-
-    document.getElementById("tempShieldCritHigh").innerText = shields.HCritHigh;
-    document.getElementById("tempShieldCritLow").innerText = shields.HCritLow;
-    document.getElementById("tempShieldCritMid").innerText = shields.HCrit;
-}
-
 function calculateDamage() {
-    var damageInput = document.getElementById("mitInput").value;
+    var damageInput = parseFloat(document.getElementById("mitInput").value) || 0;
     max = damageInput * 1.05;
     min = damageInput * 0.95;
     base = damageInput;
-    document.getElementById("maxDamage").innerText = max;
-    document.getElementById("baseDamage").innerText = base;
-    document.getElementById("minDamage").innerText = min;
-    damageType = document.getElementById("mitDropdown").value;
+    appState.damageType = document.getElementById("mitDropdown").value.toLowerCase();
     addMit();
 }
 
@@ -473,34 +407,44 @@ function partyBonusListener(e) {
     partyBonusDropdown = document.getElementById("partyBonusDropdown")
     if (checkboxes.enableTooMuchInfo) {
         bonus = parseInt(partyBonusDropdown.value)
-        partyBonus = 1 + ( bonus / 100)
+        appState.partyBonus = 1 + ( bonus / 100)
     } else {
-        partyBonus = 1.0
+        appState.partyBonus  = 1.0
     }
-    document.getElementById("PartyBonus").innerText = partyBonus;
+    document.getElementById("PartyBonus").innerText = appState.partyBonus;
 
     updateMit()
 }
 
+function personalsCheckboxListener(e) {
+    checkboxes.enablePersonalMits = e.checked;
+    updatePartyList();
+    updateMit();
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
+    checkboxes.enableShields = document.getElementById("shieldsCheckbox").checked;
+    checkboxes.enablePersonalMits = document.getElementById("personalsCheckbox").checked;
+    checkboxes.enableTooMuchInfo = document.getElementById("tooMuchInfoCheckbox").checked;
+
     for (var i = 0; i < jobs.length; i++) {
-        jobs[i].addEventListener("change", (e) => {
-            updateMit(e)
-        });
+        jobs[i].addEventListener("change", updateMit);
     }
-    createPartyList()
-    updateMit()
-    updatePartyList()
-    calculateDamage()
-    shieldCheckbox(document.getElementById("shieldsCheckbox"))
-    partyBonusListener(document.getElementById("partyBonusCheckbox"))
-    tooMuchInfoListener(document.getElementById("tooMuchInfoCheckbox"))
-    document.getElementById("mitInput").addEventListener("input", calculateDamage)
-    document.getElementById("mitDropdown").addEventListener("input", calculateDamage)
-    document.getElementById("shieldsCheckbox").addEventListener("input", (e) => {shieldCheckbox(e.target)});
-    document.getElementById("personalsCheckbox").addEventListener("input", updatePartyList)
-    document.getElementById("tooMuchInfoCheckbox").addEventListener("input", (e) => {tooMuchInfoListener(e.target)})
     
-    document.getElementById("partyBonusCheckbox").addEventListener("input", (e) => {partyBonusListener(e.target)})
-    document.getElementById("partyBonusDropdown").addEventListener("input", (e) => {partyBonusListener(document.getElementById("partyBonusCheckbox"))})
+    createPartyList();
+
+    shieldCheckbox(document.getElementById("shieldsCheckbox"));
+    partyBonusListener(document.getElementById("partyBonusCheckbox"));
+    tooMuchInfoListener(document.getElementById("tooMuchInfoCheckbox"));
+
+    calculateDamage();
+
+    document.getElementById("mitInput").addEventListener("input", calculateDamage);
+    document.getElementById("mitDropdown").addEventListener("change", calculateDamage);
+    document.getElementById("shieldsCheckbox").addEventListener("change", (e) => shieldCheckbox(e.target));
+    document.getElementById("personalsCheckbox").addEventListener("change", (e) => personalsCheckboxListener(e.target));
+    document.getElementById("tooMuchInfoCheckbox").addEventListener("change", (e) => tooMuchInfoListener(e.target));
+    document.getElementById("partyBonusCheckbox").addEventListener("change", (e) => partyBonusListener(e.target));
+    document.getElementById("partyBonusDropdown").addEventListener("change", () => partyBonusListener(document.getElementById("partyBonusCheckbox")));
 });

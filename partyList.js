@@ -213,15 +213,18 @@ function createPartyList() {
     })
 }
 
-function shieldCheckbox (element) {
-    shieldsInfo = document.getElementById("tempShields")
-    shieldsEnabled = element.checked
-    console.log(shieldsEnabled)
-    if(shieldsEnabled) {
-        shieldsInfo.style.display = "block"
+function shieldCheckbox(element) {
+    let shieldsInfo = document.getElementById("tempShields");
+    checkboxes.enableShields = element.checked;
+    
+    if (element.checked) {
+        if (shieldsInfo) shieldsInfo.style.display = "block";
     } else {
-        shieldsInfo.style.display = "none"
+        if (shieldsInfo) shieldsInfo.style.display = "none";
     }
+
+    updatePartyList();
+    updateMit();
 }
 
 // checks when user types in vitality
@@ -238,7 +241,7 @@ function vitalityListener(event, job, lvl = 100) {
 // tank calc is slightly different and off by a bit
 function healthCalculation(vitality, job, lvl = 100) {
     // Level base constants
-    const baseHP = stats.hp(lvl);       // 4400 at lvl 100
+    const baseHP = stats.hp(lvl);       // 4000 at lvl 100
     const baseMain = stats.main(lvl);   // 440 at lvl 100
 
     // HP modifier lookup
@@ -262,4 +265,12 @@ function healthCalculation(vitality, job, lvl = 100) {
     health[job] = jobBaseHP + bonusHP;
 
     return jobBaseHP + bonusHP;
+}
+
+function updateShields(mit) {
+
+}
+
+function updatePercentShields(mit){
+
 }
