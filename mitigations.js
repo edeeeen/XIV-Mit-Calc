@@ -8,13 +8,15 @@ class percentMit{
     jobs;
     mitType;
     shield;
-    constructor(name, physicalMit, magicMit, jobs, mitType, shield = null){
+    hpIncrease;
+    constructor(name, physicalMit, magicMit, jobs, mitType, shield = null, hpIncrease = null){
         this.name = name;
         this.physicalMit = physicalMit;
         this.magicMit = magicMit;
         this.jobs = jobs;
         this.mitType = mitType;
         this.shield = shield;
+        this.hpIncrease = hpIncrease;
     }
 }
 
@@ -41,6 +43,19 @@ class shield {
     }
 }
 
+class HPIncrease {
+    name;
+    percent;
+    mitType;
+    jobs;
+    constructor(name, percent, jobs, mitType = MitType.HEALTHINCREASE) {
+        this.name = name;
+        this.percent = percent;
+        this.mitType = mitType;
+        this.jobs = jobs;
+    }
+}
+
 var mitOptions = [];
 // ==== Tank ====
 mitOptions.push(new percentMit("Reprisal", 0.10, 0.10, ["PLD", "WAR", "DRK", "GNB"], MitType.PARTY));
@@ -52,7 +67,9 @@ mitOptions.push(new percentMit("Tank LB3", 0.80, 0.80, ["PLD", "WAR", "DRK", "GN
 // GNB
 mitOptions.push(new percentMit("Heart of Light", 0.05, 0.10, ["GNB"], MitType.PARTY));
 mitOptions.push(new percentMit("Camoflage", 0.10, 0.10, ["GNB"], MitType.PERSONAL));  // TODO: Consider how to handle parry rate
-mitOptions.push(new percentMit("Great Nebula", 0.40, 0.40, ["GNB"], MitType.PERSONAL)); // TODO: Add max health increase to calculation
+mitOptions.push(new percentMit("Great Nebula", 0.40, 0.40, ["GNB"], MitType.PERSONAL, null, 
+    new HPIncrease("Nebula", 0.20, ["GNB"])
+));
 mitOptions.push(new percentMit("Heart of Corundum", 0.2775, 0.2775, ["GNB"], MitType.PERSONAL)); // DOUBLE CHECK MATH ON VALUE. It is 2 seperate 15%
 
 // DRK
@@ -82,6 +99,8 @@ mitOptions.push(new percentMit("Bloodwhetting", 0.19, 0.19, ["WAR"], MitType.PER
 mitOptions.push(new percentMit("Nascent Flash", 0.19, 0.19, ["WAR"], MitType.PERSONAL,
     new shield("Bloodwhetting", 400, 1, ["WAR"], MitType.PERSONALSHIELD)
 ));
+mitOptions.push(new HPIncrease("Thrill of Battle", 0.20 , ["WAR"])); // hp increase does not effect shake
+
 // TODO: Add shake
 //TODO: Add thrill of battle
 

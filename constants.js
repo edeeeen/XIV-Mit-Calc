@@ -35,10 +35,10 @@ const MitType = Object.freeze({
     PARTYSHIELD: 3,
     PERCENTSHIELDPARTY: 4,
     PERCENTSHIELDPERSONAL: 5,
-
     PERCENTTARGETED: 6,
     SINGLETARGET: 7,
-    SHIELDTARGETED: 8
+    SHIELDTARGETED: 8,
+    HEALTHINCREASE: 9
 });
 
 const mainStat = {

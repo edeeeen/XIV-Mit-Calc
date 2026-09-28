@@ -23,8 +23,6 @@ var health = {
 }
 
 function updatePartyList() {
-    let partylist = document.getElementById("partyList");
-
     for (let j = 0; j < jobs.length; j++) {
         let job = jobs[j];
         if (!job) continue;
@@ -238,7 +236,6 @@ function vitalityListener(event, job, lvl = 100) {
 }
 
 // calculate health from vitality
-// tank calc is slightly different and off by a bit
 function healthCalculation(vitality, job, lvl = 100) {
     // Level base constants
     const baseHP = stats.hp(lvl);       // 4000 at lvl 100

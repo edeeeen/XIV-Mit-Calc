@@ -341,11 +341,11 @@ function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", pet = 
     console.log("fTNC = " + fTNC)
     console.log("fDET = " + fDET)
     
-    // Level 100 Main Stat (Healing Power) scaling
+    // Level 100 Main Stat scaling
     let fHMP = Math.floor(207 * (main - stats.main(lvl)) /508) + 100;
     console.log("fHMP = " + fHMP + "\nstats.main(lvl) = " + stats.main(lvl) + "\nstats.main(lvl) = ")
 
-    // Weapon Damage sub-function
+    // Weapon Damage
     let scaling = mainStat.value(job); 
     let fWD = Math.floor((stats.main(lvl) * getJobAttributeModifier(scaling, job) / 1000) + wd);
     console.log("fWD = " + fWD)
