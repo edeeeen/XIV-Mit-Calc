@@ -1,0 +1,82 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 2%;
+    color-scheme: dark;
+    color: #9ca3af;
+    background: #16171d;
+}
+#damage {
+    padding-bottom: 1rem;
+}
+/* Put job selection and mit container next to each other */
+#mitsAndParty {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+/* make mit checkboxes align vertically */
+#mitOptions {
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="checkbox"]:disabled {
+  opacity: 0.6;
+}
+
+#partyList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+    
+}
+
+#partyList > div {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    color: #9ca3af;
+    background: #16171d;
+}
+
+#partyList h3 {
+    margin: 0 0 10px 0;
+}
+
+#partyList p {
+    margin: 4px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#partyList input {
+    width: 70px;
+}
+
+#tooMuchInfo {
+    padding-top: 1rem;
+}
+#tooMuchInfo table {
+    border-collapse: collapse;
+}
+#tooMuchInfo table, td, th {
+    border: 1px solid;
+    padding: 10px;
+}
+
+#resultsContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+#tempShields {
+    display: flex;
+    flex-direction: column;
+}
+
+

@@ -1,7 +1,7 @@
 // Lots of data from allagan studies, ty nerds <3
 
 // doesnt work with crit shields 
-const consumtionPriority = ["Arcane Crest", "Tempera Coat", "Tempura Grassa", "Eukrasian Diagnosis", 
+const consumtionPriority = ["Arcane Crest", "Tempera Coat", "Tempera Grassa", "Eukrasian Diagnosis", 
     "Haima", "Panhaima", "Brutal Shell", "Bloodwhetting", "Nacent Flash",
     "Guardian", "Divine Caress", "Manaward", "Shade Shift", "Divine Benison", "Celestial Intersection",
     "The Spire", "Eukrasian Prognosis II", "Seraphic Veil", "Consolation", "Holos", "Radiant Aegis",
