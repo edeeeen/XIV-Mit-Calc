@@ -107,7 +107,7 @@ mitOptions.push(new HPIncrease("Thrill of Battle", 0.20 , ["WAR"])); // hp incre
 
 
 // Melee
-mitOptions.push(new percentMit("Feint", 0.10, 0.05, ["MNK", "DRG", "NIN", "SAM", "RPR"], MitType.PARTY));
+mitOptions.push(new percentMit("Feint", 0.10, 0.05, ["MNK", "DRG", "NIN", "SAM", "RPR", "VPR"], MitType.PARTY));
 mitOptions.push(new shield("Shade Shift", 0, 1, ["NIN"], MitType.PERCENTSHIELDPERSONAL, false, 0.20));
 mitOptions.push(new percentMit("Riddle of Earth", 0.20, 0.20, ["MNK"], MitType.PERSONAL));
 mitOptions.push(new percentMit("Tengentsu", 0.10, 0.10, ["SAM"], MitType.PERSONAL));

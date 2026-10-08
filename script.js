@@ -333,7 +333,7 @@ function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", pet = 
     const tanks = ["PLD", "DRK", "WAR", "GNB"]
     let fTNC = 1000
     if(tanks.includes(job)) {
-        fTNC = Math.floor(100 * (tnc - stats.sub(lvl)) / stats.div(lvl) + 1000);
+        fTNC = Math.floor(112 * (tnc - stats.sub(lvl)) / stats.div(lvl) + 1000);
     }
     
     let fCRIT = Math.floor(200 * (crit - stats.sub(lvl)) / stats.div(lvl)) + 1400;
@@ -342,12 +342,20 @@ function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", pet = 
     console.log("fDET = " + fDET)
     
     // Level 100 Main Stat scaling
+    // 207 == M value, 508 == D value
     let fHMP = Math.floor(207 * (main - stats.main(lvl)) /508) + 100;
-    console.log("fHMP = " + fHMP + "\nstats.main(lvl) = " + stats.main(lvl) + "\nstats.main(lvl) = ")
+    console.log("fHMP = " + fHMP + "\nstats.main(lvl) = " + stats.main(lvl))
 
     // Weapon Damage
     let scaling = mainStat.value(job); 
-    let fWD = Math.floor((stats.main(lvl) * getJobAttributeModifier(scaling, job) / 1000) + wd);
+    // pets have a job mod of 100 for some reason
+    let fWD = 0;
+    if (pet) {
+        fWD = Math.floor((stats.main(lvl) * 100 / 1000) + wd);
+    } else {
+        fWD = Math.floor((stats.main(lvl) * getJobAttributeModifier(scaling, job) / 1000) + wd);
+    }
+    
     console.log("fWD = " + fWD)
 
     // Trait Modifier
