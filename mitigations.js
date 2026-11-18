@@ -9,7 +9,8 @@ class percentMit{
     mitType;
     shield;
     hpIncrease;
-    constructor(name, physicalMit, magicMit, jobs, mitType, shield = null, hpIncrease = null){
+    healingBuff;
+    constructor(name, physicalMit, magicMit, jobs, mitType, shield = null, hpIncrease = null, healingBuff = null){
         this.name = name;
         this.physicalMit = physicalMit;
         this.magicMit = magicMit;
@@ -17,11 +18,22 @@ class percentMit{
         this.mitType = mitType;
         this.shield = shield;
         this.hpIncrease = hpIncrease;
+        this.healingBuff = healingBuff;
     }
 }
 
 class healingBuff {
-
+    name;
+    percentIncrease;
+    jobs;
+    gcdOnly;
+    constructor(name, jobs, percentIncrease, gcdOnly, mitType = MitType.HEALINGBUFF){ 
+        this.name = name;
+        this.jobs = jobs;
+        this.percentIncrease = percentIncrease
+        this.gcdOnly = gcdOnly;
+        this.mitType = MitType.HEALINGBUFF;
+    }
 }
 
 class shield {
@@ -59,7 +71,9 @@ class HPIncrease {
 var mitOptions = [];
 // ==== Tank ====
 mitOptions.push(new percentMit("Reprisal", 0.10, 0.10, ["PLD", "WAR", "DRK", "GNB"], MitType.PARTY));
-mitOptions.push(new percentMit("Rampart", 0.20, 0.20, ["PLD", "WAR", "DRK", "GNB"], MitType.PERSONAL));
+mitOptions.push(new percentMit("Rampart", 0.20, 0.20, ["PLD", "WAR", "DRK", "GNB"], MitType.PERSONAL, null, null,
+    new healingBuff("Rampart", ["PLD", "WAR", "DRK", "GNB"], 0.15, false)
+));
 mitOptions.push(new percentMit("Tank LB1", 0.40, 0.40, ["PLD", "WAR", "DRK", "GNB"], MitType.PARTY));
 mitOptions.push(new percentMit("Tank LB2", 0.20, 0.20, ["PLD", "WAR", "DRK", "GNB"], MitType.PARTY));
 mitOptions.push(new percentMit("Tank LB3", 0.80, 0.80, ["PLD", "WAR", "DRK", "GNB"], MitType.PARTY));
@@ -79,14 +93,12 @@ mitOptions.push(new percentMit("Shadowed Vigil", 0.40, 0.40, ["DRK"], MitType.PE
 mitOptions.push(new percentMit("Oblation", 0.10, 0.10, ["DRK"], MitType.PERSONAL));
 mitOptions.push(new shield("The Blackest Night", 0, 1, ["DRK"], MitType.PERCENTSHIELDPERSONAL, false, 0.25))
 
-//TODO: Add tbn
-
 // PLD
-mitOptions.push(new percentMit("Passage of Arms", 0.15, 0.15, ["PLD"], MitType.PARTY));
+mitOptions.push(new percentMit("Passage of Arms", 0.15, 0.15, ["PLD"], MitType.PARTY)); // calculated wrong, blocks for pld, 15% for rest
 mitOptions.push(new percentMit("Guardian", 0.40, 0.40, ["PLD"], MitType.PERSONAL, 
     new shield("Guardian", 1000, 1, ["PLD"], MitType.PERSONALSHIELD)
 ));
-mitOptions.push(new percentMit("Bulwark", 0.20, 0.20, ["PLD"], MitType.PERSONAL)); // not super accurate, might not matter. need to check if blocking is multiplicative
+mitOptions.push(new percentMit("Bulwark", 0.20, 0.20, ["PLD"], MitType.PERSONAL)); // not super accurate, look into blocking stuff. conflicts with wings | not fixed
 mitOptions.push(new percentMit("Holy Sheltron", 0.2775, 0.2775, ["PLD"], MitType.PERSONAL));
 mitOptions.push(new percentMit("Intervention", 0, 0, ["PLD"], MitType.PERSONAL)); // does variable mitigation based on rampart and guardian
 mitOptions.push(new shield("Divine Veil", 0, 1, ["PLD"], MitType.PERCENTSHIELDPARTY, false, 0.10))
@@ -97,12 +109,12 @@ mitOptions.push(new percentMit("Bloodwhetting", 0.19, 0.19, ["WAR"], MitType.PER
     new shield("Bloodwhetting", 400, 1, ["WAR"], MitType.PERSONALSHIELD)
 ));
 mitOptions.push(new percentMit("Nascent Flash", 0.19, 0.19, ["WAR"], MitType.PERSONAL,
-    new shield("Bloodwhetting", 400, 1, ["WAR"], MitType.PERSONALSHIELD)
+    new shield("Nascent Flash", 400, 1, ["WAR"], MitType.PERSONALSHIELD)
 ));
-mitOptions.push(new HPIncrease("Thrill of Battle", 0.20 , ["WAR"])); // hp increase does not effect shake
+mitOptions.push(new HPIncrease("Thrill of Battle", 0.20 , ["WAR"])); // hp increase does not effect shake 
+// TODO: Add healing buff to thrill
 
 // TODO: Add shake
-//TODO: Add thrill of battle
 
 
 
@@ -112,10 +124,13 @@ mitOptions.push(new shield("Shade Shift", 0, 1, ["NIN"], MitType.PERCENTSHIELDPE
 mitOptions.push(new percentMit("Riddle of Earth", 0.20, 0.20, ["MNK"], MitType.PERSONAL));
 mitOptions.push(new percentMit("Tengentsu", 0.10, 0.10, ["SAM"], MitType.PERSONAL));
 mitOptions.push(new shield("Shade Shift", 0, 1, ["NIN"], MitType.PERCENTSHIELDPERSONAL, false, 0.10));
+mitOptions.push(new healingBuff("Mantra", ["MNK"], 0.10, false));
 
 // Caster
 mitOptions.push(new percentMit("Addle", 0.05, 0.10, ["BLM", "SMN", "RDM", "PCT"], MitType.PARTY));
-mitOptions.push(new percentMit("Magick Barrier", 0.0, 0.10, ["RDM"], MitType.PARTY)); // TODO: Add healing buff
+mitOptions.push(new percentMit("Magick Barrier", 0.0, 0.10, ["RDM"], MitType.PARTY, null, null,
+    new healingBuff("Magick Barrier", ["RDM"], 0.05,  false)
+));
 mitOptions.push(new shield("Radiant Aegis", 0, 1, ["SMN"], MitType.PERCENTSHIELDPERSONAL, 0.20))
 mitOptions.push(new shield("Manaward", 0, 1, ["BLM"], MitType.PERCENTSHIELDPERSONAL, 0.30))
 mitOptions.push(new shield("Tempera Coat", 0, 1, ["PCT"], MitType.PERCENTSHIELDPERSONAL, 0.20))
@@ -126,14 +141,16 @@ mitOptions.push(new shield("Tempera Grassa", 0, 1, ["PCT"], MitType.PERCENTSHIEL
 mitOptions.push(new percentMit("Shield Samba", 0.15, 0.15, ["DNC"], MitType.PARTY));
 // TODO: Add improv shields
 mitOptions.push(new percentMit("Troubadour", 0.15, 0.15, ["BRD"], MitType.PARTY));
-// TODO: Add nature's minne
+mitOptions.push(new healingBuff("The Wanderer's Minuet", ["BRD"], 0.15, false));
 mitOptions.push(new percentMit("Tactician", 0.15, 0.15, ["MCH"], MitType.PARTY));
 mitOptions.push(new percentMit("Dismantle", 0.10, 0.10, ["MCH"], MitType.PARTY));
 
 // ==== Healer ====
 // SCH
 mitOptions.push(new percentMit("Sacred Soil", 0.10, 0.10, ["SCH"], MitType.PARTY));
-mitOptions.push(new percentMit("Fey Illumination", 0.0, 0.05, ["SCH"], MitType.PARTY)); // TODO: Add % healing potency increase
+mitOptions.push(new percentMit("Fey Illumination", 0.0, 0.05, ["SCH"], MitType.PARTY, null, null,
+    new healingBuff("Fey Illumination", ["SCH"], 0.10, true)
+));
 mitOptions.push(new percentMit("Expedient", 0.10, 0.10, ["SCH"], MitType.PARTY));
 mitOptions.push(new percentMit("Protraction", 0.10, 0.10, ["SCH"], MitType.PERSONAL));
 mitOptions.push(new shield("Adloquium", 300, 1.80, ["SCH"], MitType.PERSONALSHIELD))
@@ -141,6 +158,7 @@ mitOptions.push(new shield("Concitation", 200, 1.80, ["SCH"], MitType.PARTYSHIEL
 mitOptions.push(new shield("Consolation", 250, 1, ["SCH"], MitType.PARTYSHIELD, true))
 mitOptions.push(new shield("Accession", 240, 1.80, ["SCH"], MitType.PARTYSHIELD))
 mitOptions.push(new shield("Manifestation", 360, 1.80, ["SCH"], MitType.PARTYSHIELD))
+mitOptions.push(new healingBuff("Dissipation", ["SCH"], 0.20, true));
 // TODO: spreadlo
 
 // SGE
@@ -153,6 +171,10 @@ mitOptions.push(new shield("Eukrasian Prognosis II", 100, 3.60, ["SGE"], MitType
 mitOptions.push(new shield("Eukrasian Diagnosis", 300, 1.80, ["SGE"], MitType.PARTYSHIELD));
 mitOptions.push(new shield("Panhaima", 200, 1, ["SGE"], MitType.PARTYSHIELD));
 mitOptions.push(new shield("Haima", 300, 1, ["SGE"], MitType.PERSONALSHIELD));
+mitOptions.push(new healingBuff("Krasis", ["SGE"], 0.20, false));
+mitOptions.push(new healingBuff("Physis II", ["SGE"], 0.10, false));
+mitOptions.push(new healingBuff("Zoe", ["SGE"], 0.50, false));
+mitOptions.push(new healingBuff("Philosiphia", ["SGE"], 0.20, false));
 
 // WHM
 mitOptions.push(new percentMit("Plenary Indulgence", 0.10, 0.10, ["WHM"], MitType.PARTY)); // TODO: Add % healing potency increase
@@ -160,6 +182,7 @@ mitOptions.push(new percentMit("Temperance", 0.10, 0.10, ["WHM"], MitType.PARTY)
 mitOptions.push(new shield("Divine Caress", 400, 1, ["WHM"], MitType.PARTYSHIELD))
 mitOptions.push(new percentMit("Aquaveil", 0.15, 0.15, ["WHM"], MitType.PERSONAL));
 mitOptions.push(new shield("Divine Benison", 500, 1, ["WHM"], MitType.PERSONALSHIELD))
+mitOptions.push(new healingBuff("Asylum", ["WHM"], 0.10, true));
 
 // TODO: Add asylum % healing potency increase
 
@@ -170,5 +193,7 @@ mitOptions.push(new percentMit("Exaltation", 0.10, 0.10, ["AST"], MitType.PERSON
 mitOptions.push(new percentMit("Sun Sign", 0.10, 0.10, ["AST"], MitType.PARTY));
 mitOptions.push(new shield("The Spire", 400, 1, ["AST"], MitType.PERSONALSHIELD))
 mitOptions.push(new shield("Celestial Intersection", 200, 2, ["AST"], MitType.PERSONALSHIELD))
+mitOptions.push(new healingBuff("The Arrow", ["AST"], 0.10, false));
+mitOptions.push(new healingBuff("Neutral Sect", ["AST"], 0.20, true));
 // TODO: add neutral shields 
 

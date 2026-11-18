@@ -19,7 +19,8 @@ var checkboxes = {
     enableShields: false,
     enableTooMuchInfo: false,
     enablePartyBuff: false,
-    simulatePartyBonus: false
+    simulatePartyBonus: false,
+    enableHealingBuffs: false
 }
 
 
@@ -30,11 +31,29 @@ function addMit() {
 
     const selectedMitObjects = Array.from(appState.selectedMits.values());
 
-    // split up shield and normal mits
+    // split up shield, buffs, and normal mits
     var shields = [];
     var normalMits = [];
+    var healingBuffs = [];
 
     selectedMitObjects.forEach(mit => {
+        [mit, mit.shield].forEach(effect => {
+            if (!effect) return;
+
+            if (effect.mitType === MitType.HEALINGBUFF) {
+                healingBuffs.push(effect);
+            }
+
+            if (effect.healingBuff) {
+                healingBuffs.push(effect.healingBuff);
+            }
+        });
+
+        if (mit.shield) {
+            // Ensure the attached shield knows which job cast it
+            if (!mit.shield.jobs) mit.shield.jobs = mit.jobs;
+            shields.push(mit.shield);
+        }
         
         // If it has percentage mitigation, treat it as a normal mit
         if (mit.physicalMit > 0 || mit.magicMit > 0) {
@@ -44,13 +63,6 @@ function addMit() {
         // If it is purely a shield object, add to shields
         if (mit.mitType === MitType.PARTYSHIELD || mit.mitType === MitType.PERSONALSHIELD) {
             shields.push(mit);
-        }
-
-        // If it is a percentage mit WITH an attached shield (like Holos), attach its shield
-        if (mit.shield) {
-            // Ensure the attached shield knows which job cast it
-            if (!mit.shield.jobs) mit.shield.jobs = mit.jobs; 
-            shields.push(mit.shield); 
         }
 
         if (mit.mitType === MitType.PERCENTSHIELDPERSONAL || mit.mitType === MitType.PERCENTSHIELDPARTY) {
@@ -75,7 +87,7 @@ function addMit() {
     if (shields.length > 0) {
         shields.forEach(mit => {
             if (mit.potency > 0) {
-                let healingValue = getShieldValue(mit);
+                let healingValue = getShieldValue(mit, healingBuffs);
                 let actualShield = Object.fromEntries(
                     Object.entries(healingValue).map(([key, value]) => [key, Math.round(value * (mit.multiplier || 1))])
                 );
@@ -100,9 +112,10 @@ function addMit() {
         ["tempShieldHigh", "tempShieldMid", "tempShieldLow", "tempShieldCritHigh", "tempShieldCritMid", "tempShieldCritLow"].forEach(id => {
             document.getElementById(id).innerText = "0";
         });
-
     }
-    
+
+
+
     // ======== NORMAL MITS ==============
     // update max
     
@@ -195,6 +208,7 @@ function updateMit() {
     // Get currently selected mits before clearing
     var personalsEnabled = checkboxes.enablePersonalMits;
     var shieldsEnabled = checkboxes.enableShields;
+    var healingBuffsEnabled = checkboxes.enableHealingBuffs;
 
     for (let [mitName] of appState.selectedMits) {
         if (!availableMits.has(mitName)) {
@@ -219,7 +233,7 @@ function updateMit() {
         if (!personalsEnabled && mitObject.mitType === MitType.PERSONAL) return;
         if (!shieldsEnabled && (mitObject.mitType === MitType.PARTYSHIELD || mitObject.mitType === MitType.PERCENTSHIELDPARTY)) return;
         if ((!personalsEnabled || !shieldsEnabled) && (mitObject.mitType === MitType.PERSONALSHIELD || mitObject.mitType === MitType.PERCENTSHIELDPERSONAL)) return;
-
+        if (!healingBuffsEnabled && mitObject.mitType === MitType.HEALINGBUFF) return;
         // create mit name text
         var label = document.createElement("label");
         label.className = mitName.replace(/\s+/g, '');
@@ -304,7 +318,7 @@ function getJobAttributeModifier(stat, job) {
     }
 }
 
-function getShieldValue(mit) {
+function getShieldValue(mit, buffs = []) {
     job = mit.jobs[0];
     console.log(job)
     potency = mit.potency;
@@ -317,12 +331,12 @@ function getShieldValue(mit) {
     }
     crt = parseInt(document.getElementById(job+"CRTInput").value);
     wd  = parseInt(document.getElementById(job+"weaponDamageInput").value);
-    return calculateShields(potency, mainStatVal, det, tnc, crt, wd, job, mit.pet)
+    return calculateShields(potency, mainStatVal, det, tnc, crt, wd, job, mit.pet, buffs);
 }
 
 // https://docs.google.com/spreadsheets/d/1YAuklyu4IJCFUdk1KERmCP0F_SRkhJpSRvU0hazStj0/edit?gid=2139215610#gid=2139215610
 // Caro is the goat
-function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", pet = false, lvl = 100) {
+function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", pet = false, buffs = [], lvl = 100) {
     // pets aren't affected by party bonus
     if (!pet) {
         main = main * appState.partyBonus // add party bonus 1.0-1.05
@@ -380,13 +394,20 @@ function calculateShields(potency, main, det, tnc, crit, wd, job = "SCH", pet = 
     }
 
     return {
-        H: H3,
-        HLow: Math.floor(H3 * 97 / 100),
-        HHigh: Math.floor(H3 * 103 / 100),
-        HCrit: H3Crit,
-        HCritLow: Math.floor(H3Crit * 97 / 100),
-        HCritHigh: Math.floor(H3Crit * 103 / 100)
+        H: calculateHealingBuffs(H3, buffs),
+        HLow: calculateHealingBuffs(Math.floor(H3 * 97 / 100), buffs),
+        HHigh: calculateHealingBuffs(Math.floor(H3 * 103 / 100), buffs),
+        HCrit: calculateHealingBuffs(H3Crit, buffs),
+        HCritLow: calculateHealingBuffs(Math.floor(H3Crit * 97 / 100), buffs),
+        HCritHigh: calculateHealingBuffs(Math.floor(H3Crit * 103 / 100), buffs)
     };
+}
+
+function calculateHealingBuffs(healingValue, buffs) {
+    buffs.forEach(buff => {
+        healingValue = Math.floor(healingValue * (1 + buff.percentIncrease));
+    })
+    return healingValue;
 }
 
 function calculateDamage() {
@@ -429,11 +450,17 @@ function personalsCheckboxListener(e) {
     updateMit();
 }
 
+function healingBuffsCheckboxListener(e) {
+    checkboxes.enableHealingBuffs = e.checked;
+    updatePartyList();
+    updateMit();
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     checkboxes.enableShields = document.getElementById("shieldsCheckbox").checked;
     checkboxes.enablePersonalMits = document.getElementById("personalsCheckbox").checked;
     checkboxes.enableTooMuchInfo = document.getElementById("tooMuchInfoCheckbox").checked;
+    checkboxes.enableHealingBuffs = document.getElementById("healingBuffsCheckbox").checked;
 
     for (var i = 0; i < jobs.length; i++) {
         jobs[i].addEventListener("change", updateMit);
@@ -454,4 +481,5 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("tooMuchInfoCheckbox").addEventListener("change", (e) => tooMuchInfoListener(e.target));
     document.getElementById("partyBonusCheckbox").addEventListener("change", (e) => partyBonusListener(e.target));
     document.getElementById("partyBonusDropdown").addEventListener("change", () => partyBonusListener(document.getElementById("partyBonusCheckbox")));
+    document.getElementById("healingBuffsCheckbox").addEventListener("change", (e) => healingBuffsCheckboxListener(e.target));
 });

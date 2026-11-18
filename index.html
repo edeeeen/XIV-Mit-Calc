@@ -30,6 +30,7 @@
             <option value="2">2%</option>
             <option value="1">1%</option>
         </select>
+        <input type="checkbox" id="healingBuffsCheckbox" onclick="updateMit()">Enable Healing Buffs</input>
         <input type="checkbox" id="tooMuchInfoCheckbox">Too Much Info</input>
     </div>
 
@@ -54,6 +55,11 @@
             <p>Low: <span id="tempShieldCritLow">0</span></p>
             <p>Mid: <span id="tempShieldCritMid">0</span></p>
             <p>High: <span id="tempShieldCritHigh">0</span></p>
+        </div>
+
+        <div id="healingBuffs">
+            <h3>Healing Buffs</h3>
+            <ul id="healingBuffList"></ul>
         </div>
 
         

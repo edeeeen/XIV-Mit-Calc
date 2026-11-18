@@ -38,7 +38,8 @@ const MitType = Object.freeze({
     PERCENTTARGETED: 6,
     SINGLETARGET: 7,
     SHIELDTARGETED: 8,
-    HEALTHINCREASE: 9
+    HEALTHINCREASE: 9,
+    HEALINGBUFF: 10
 });
 
 const mainStat = {
