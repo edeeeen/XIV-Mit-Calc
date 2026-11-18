@@ -124,11 +124,21 @@ function addMit() {
 
     const totalMitFactor = normalMits.reduce((acc, mit) => acc * calculateMitFactor(mit), 1);
 
+    maxFinal = max;
+    minfinal = min;
+    baseFinal = base;
+
+    normalMits.forEach(mit => {
+        maxFinal = Math.floor(maxFinal * calculateMitFactor(mit));
+        minfinal = Math.floor(minfinal * calculateMitFactor(mit));
+        baseFinal = Math.floor(baseFinal * calculateMitFactor(mit));
+    })
+
     if (normalMits.length > 0) {
         const mitListStr = normalMits.map(mit => currentDamageType === "physical" ? mit.physicalMit : mit.magicMit).join(" * ");
-        document.getElementById("maxDamage").innerText = `${max} * ${mitListStr} = ${(max * totalMitFactor).toFixed(2)}`;
-        document.getElementById("baseDamage").innerText = `${base} * ${mitListStr} = ${(base * totalMitFactor).toFixed(2)}`;
-        document.getElementById("minDamage").innerText = `${min} * ${mitListStr} = ${(min * totalMitFactor).toFixed(2)}`;
+        document.getElementById("maxDamage").innerText = `${max} * ${mitListStr} = ${maxFinal}`;
+        document.getElementById("baseDamage").innerText = `${base} * ${mitListStr} = ${baseFinal}`;
+        document.getElementById("minDamage").innerText = `${min} * ${mitListStr} = ${minfinal}`;
     } else {
         document.getElementById("maxDamage").innerText = max;
         document.getElementById("baseDamage").innerText = base;
@@ -412,8 +422,8 @@ function calculateHealingBuffs(healingValue, buffs) {
 
 function calculateDamage() {
     var damageInput = parseFloat(document.getElementById("mitInput").value) || 0;
-    max = damageInput * 1.05;
-    min = damageInput * 0.95;
+    max = Math.floor(damageInput * 1.05);
+    min = Math.floor(damageInput * 0.95);
     base = damageInput;
     appState.damageType = document.getElementById("mitDropdown").value.toLowerCase();
     addMit();
