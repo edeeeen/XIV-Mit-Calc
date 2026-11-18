@@ -89,7 +89,13 @@ function addMit() {
             if (mit.potency > 0) {
                 let healingValue = getShieldValue(mit, healingBuffs);
                 let actualShield = Object.fromEntries(
-                    Object.entries(healingValue).map(([key, value]) => [key, Math.round(value * (mit.multiplier || 1))])
+                    Object.entries(healingValue).map(([key, value]) => {
+                        let shieldValue = Math.round(value * (mit.multiplier || 1));
+                        if (key.startsWith("HCrit")) {
+                            shieldValue *= 1 + (mit.additionalCritShields || 0);
+                        }
+                        return [key, shieldValue];
+                    })
                 );
                 allShields.push(actualShield);
             } else {

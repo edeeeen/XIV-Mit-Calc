@@ -44,7 +44,8 @@ class shield {
     mitType;
     pet; // exists because pets actions aren't affected by party bonus, this literally only affects consolation
     percentShield;
-    constructor(name, potency, multiplier, jobs, mitType, pet = false, percentShield = 0.0){
+    additionalCritShields;
+    constructor(name, potency, multiplier, jobs, mitType, pet = false, percentShield = 0.0, additionalCritShields = 0){
         this.name = name;
         this.potency = potency;
         this.jobs = jobs;
@@ -52,6 +53,7 @@ class shield {
         this.mitType = mitType;
         this.pet = pet;
         this.percentShield = percentShield
+        this.additionalCritShields = additionalCritShields;
     }
 }
 
@@ -153,7 +155,7 @@ mitOptions.push(new percentMit("Fey Illumination", 0.0, 0.05, ["SCH"], MitType.P
 ));
 mitOptions.push(new percentMit("Expedient", 0.10, 0.10, ["SCH"], MitType.PARTY));
 mitOptions.push(new percentMit("Protraction", 0.10, 0.10, ["SCH"], MitType.PERSONAL));
-mitOptions.push(new shield("Adloquium", 300, 1.80, ["SCH"], MitType.PERSONALSHIELD))
+mitOptions.push(new shield("Adloquium", 300, 1.80, ["SCH"], MitType.PERSONALSHIELD, false, 0, 1))
 mitOptions.push(new shield("Concitation", 200, 1.80, ["SCH"], MitType.PARTYSHIELD))
 mitOptions.push(new shield("Consolation", 250, 1, ["SCH"], MitType.PARTYSHIELD, true))
 mitOptions.push(new shield("Accession", 240, 1.80, ["SCH"], MitType.PARTYSHIELD))
@@ -168,7 +170,7 @@ mitOptions.push(new percentMit("Holos", 0.10, 0.10, ["SGE"], MitType.PARTY,
 ));
 mitOptions.push(new percentMit("Taurochole", 0.10, 0.10, ["SGE"], MitType.PERSONAL));
 mitOptions.push(new shield("Eukrasian Prognosis II", 100, 3.60, ["SGE"], MitType.PARTYSHIELD));
-mitOptions.push(new shield("Eukrasian Diagnosis", 300, 1.80, ["SGE"], MitType.PARTYSHIELD));
+mitOptions.push(new shield("Eukrasian Diagnosis", 300, 1.80, ["SGE"], MitType.PARTYSHIELD, false, 0, 1));
 mitOptions.push(new shield("Panhaima", 200, 1, ["SGE"], MitType.PARTYSHIELD));
 mitOptions.push(new shield("Haima", 300, 1, ["SGE"], MitType.PERSONALSHIELD));
 mitOptions.push(new healingBuff("Krasis", ["SGE"], 0.20, false));
